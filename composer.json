@@ -1,0 +1,16 @@
+{
+    "name": "novosga/reports-bundle",
+    "license": "MIT",
+    "type": "library",
+    "autoload": {
+        "psr-4": { "Novosga\\ReportsBundle\\": "" }
+    },
+    "require": {
+        "php": ">=5.5.9"
+    },
+    "config": {
+        "platform": {
+            "php": "5.5.9"
+        }
+    }
+}
