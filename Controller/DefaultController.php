@@ -91,9 +91,7 @@ class DefaultController extends Controller
             $data['servicos'] = $servicos[$unidade];
             $envelope->setData($data);
         } catch (Exception $e) {
-            $envelope
-                    ->setSuccess(false)
-                    ->setMessage($e->getMessage());
+            $envelope->exception($e);
         }
 
         return $this->json($envelope);
@@ -127,9 +125,7 @@ class DefaultController extends Controller
             $data = $grafico->jsonSerialize();
             $envelope->setData($data);
         } catch (\Exception $e) {
-            $envelope
-                    ->setSuccess(false)
-                    ->setMessage($e->getMessage());
+            $envelope->exception($e);
         }
 
         return $this->json($envelope);
