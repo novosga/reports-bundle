@@ -77,7 +77,7 @@ class DefaultController extends Controller
             'graficos' => $this->graficos,
             'statusAtendimento' => AtendimentoService::situacoes(),
             'unidadesJson' => json_encode($arr),
-            'now' => DateUtil::now(_('d/m/Y'))
+            'now' => (new DateTime())->format(_('d/m/Y'))
         ]);
     }
 
@@ -88,7 +88,7 @@ class DefaultController extends Controller
     {
         $envelope = new Envelope();
         try {
-            $ini = DateUtil::now('Y-m-d');
+            $ini = (new DateTime())->format('Y-m-d');
             $fim = DateUtil::nowSQL(); // full datetime
             $unidade = (int) $request->get('unidade');
             $status = $this->total_atendimentos_status($ini, $fim, $unidade);
@@ -529,7 +529,7 @@ class DefaultController extends Controller
     {
         $nomeServico = trim($nomeServico);
         if (!empty($nomeServico)) {
-            $nomeServico = Strings::sqlLikeParam($nomeServico);
+            $nomeServico = "%$nomeServico%";
         }
 
         $unidades = $this->unidadesArray($unidadeId);
