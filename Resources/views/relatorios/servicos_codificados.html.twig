@@ -1,7 +1,6 @@
-{% for dado in relatorio.dados %}
 <div class="header">
-    <h2>{{ dado.unidade }}</h2>
-    <p>{% trans %}Período de {{ dataInicial }} a {{ dataFinal }}{% endtrans %}</p>
+    <h2>{{ relatorio.dados.unidade }}</h2>
+    <p>{% trans with {'%dataInicial%': dataInicial, '%dataFinal%': dataFinal} from "app" %}Período de %dataInicial% a %dataFinal%{% endtrans %}</p>
 </div>
 <table class="table table-striped">
     <thead>
@@ -12,7 +11,7 @@
     </thead>
     <tbody>
         {% set total = 0 %}
-        {% for s in dado.servicos %}
+        {% for s in relatorio.dados.servicos %}
         <tr>
             <td>{{ s.nome }}</td>
             <td>{{ s.total }}</td>
@@ -29,4 +28,3 @@
         </tr>
     </tfoot>
 </table>
-{% endfor %}

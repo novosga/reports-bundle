@@ -1,6 +1,5 @@
-{% for dado in relatorio.dados %}
 <div class="header">
-    <h2>{{ dado.unidade }}</h2>
+    <h2>{{ relatorio.dados.unidade }}</h2>
 </div>
 <table class="table table-striped">
     <thead>
@@ -10,7 +9,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for su in dado.servicos %}
+        {% for su in relatorio.dados.servicos %}
         <tr>
             <td class="w25 center">{{ su.sigla }}</td>
             <td class="strong">
@@ -27,4 +26,3 @@
         {% endfor %}
     </tbody>
 </table>
-{% endfor %}

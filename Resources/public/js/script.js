@@ -2,12 +2,10 @@
  * Novo SGA - Estatisticas
  * @author Rogerio Lino <rogeriolino@gmail.com>
  */
-var SGA = SGA || {};
+var App = App || {};
 
 App.Estatisticas = {
     
-    unidades: {},
-            
     options: function(group) {
         var elems = $(group + ' .option');
         elems.find(':input').prop('disabled', true);
@@ -25,28 +23,6 @@ App.Estatisticas = {
     },
     
     Grafico: {
-
-        today: function(unidade, titulos) {
-            App.ajax({
-                url: App.url('today'),
-                data: {
-                    unidade: unidade
-                },
-                success: function(response) {
-                    App.Estatisticas.Grafico.pie({
-                        id: 'atendimentos-status-' + unidade, 
-                        dados: response.data.status,
-                        legendas: response.data.legendas,
-                        titulo: titulos.status
-                    });
-                    App.Estatisticas.Grafico.pie({
-                        id: 'atendimentos-servicos-' + unidade, 
-                        dados: response.data.servicos,
-                        titulo: titulos.servicos
-                    });
-                }
-            });
-        },
         
         gerar: function() {
             var id = $('#chart-id').val();
@@ -54,36 +30,26 @@ App.Estatisticas = {
                 var dtIni = $('#chart-dataInicial').val();
                 var dtFim = $('#chart-dataFinal').val();
                 App.ajax({
-                    url: App.url('grafico'),
+                    url: App.url('/novosga.reports/chart/') + id,
                     data: {
                         grafico: id, 
-                        unidade: ($('#chart-unidade').prop('disabled') ? 0 : $('#chart-unidade').val()), 
-                        inicial: App.dateToSql(dtIni), 
-                        'final': App.dateToSql(dtFim)
+                        inicial: App.Estatisticas.dateToSql(dtIni), 
+                        final: App.Estatisticas.dateToSql(dtFim)
                     },
                     success: function(response) {
-                        var result = $('#chart-result');
-                        result.html('');
-                        var dados = response.data.dados;
-                        for (var i in dados) {
-                            if (App.Estatisticas.unidades[i]) {
-                                var id = 'chart-result-' + i;
-                                result.append('<div id="' + id + '"></div>');
-                                var prop = {
-                                    id: id, 
-                                    dados: response.data.dados[i],
-                                    legendas: response.data.legendas,
-                                    titulo: response.data.titulo + ' - ' + App.Estatisticas.unidades[i] + ' (' + dtIni + ' - ' + dtFim + ')'
-                                };
-                                switch (response.data.tipo) {
-                                case 'pie':
-                                    App.Estatisticas.Grafico.pie(prop);
-                                    break;
-                                case 'bar':
-                                    App.Estatisticas.Grafico.bar(prop);
-                                    break;
-                                }
-                            }
+                        var prop = {
+                            id: 'chart-result', 
+                            dados: response.data.dados,
+                            legendas: response.data.legendas,
+                            titulo: response.data.titulo + ' (' + dtIni + ' - ' + dtFim + ')'
+                        };
+                        switch (response.data.tipo) {
+                        case 'pie':
+                            App.Estatisticas.Grafico.pie(prop);
+                            break;
+                        case 'bar':
+                            App.Estatisticas.Grafico.bar(prop);
+                            break;
                         }
                         $(window).scrollTop($('#chart-result').position().top);
                     }
@@ -164,7 +130,7 @@ App.Estatisticas = {
                 // TODO: informar no response o tipo de tooltip (abaixo esta fixo formatando tempo)
                 tooltip: {
                     formatter: function() {
-                        return this.series.name + ': ' + App.secToTime(this.y);
+                        return this.series.name + ': ' + App.Estatisticas.secToTime(this.y);
                     }
                 },
                 series: series
@@ -176,8 +142,8 @@ App.Estatisticas = {
     Relatorio: {
         
         gerar: function() {
-            $('#report-hidden-inicial').val(App.dateToSql($('#report-dataInicial').val()));
-            $('#report-hidden-final').val(App.dateToSql($('#report-dataFinal').val()));
+            $('#report-hidden-inicial').val(App.Estatisticas.dateToSql($('#report-dataInicial').val()));
+            $('#report-hidden-final').val(App.Estatisticas.dateToSql($('#report-dataFinal').val()));
             return true;
         },
         
@@ -188,6 +154,44 @@ App.Estatisticas = {
             }
         }
         
-    }
+    },
+            
+    secToTime: function(seconds) {
+        var hours = Math.floor(seconds / 3600);
+        var mins = Math.floor((seconds - (hours * 3600)) / 60);
+        mins = mins < 10 ? '0' + mins : mins;
+        var secs = Math.floor((seconds - (hours * 3600) - (mins * 60)));
+        secs = secs < 10 ? '0' + secs : secs;
+        return hours + ":" + mins + ":" + secs;
+    },
+    
+    dateToSql: function(localeDate) {
+        if (localeDate && localeDate != "") {
+            var datetime = localeDate.split(' ');
+            var date = datetime[0].split('/');
+            var time = '';
+            // date i18n
+            var format = App.dateFormat.toLowerCase().split("/");
+            var sqlDate = [];
+            for (var i = 0; i < format.length; i++) {
+                switch (format[i]) {
+                case 'd':
+                    sqlDate[2] = date[i];
+                    break;
+                case 'm':
+                    sqlDate[1] = date[i];
+                    break;
+                case 'y':
+                    sqlDate[0] = date[i];
+                    break;
+                }
+            }
+            if (datetime.length > 1) {
+                time = ' ' + datetime[1];
+            }
+            return sqlDate.join('-') + time;
+        }
+        return "";
+    },
     
 };

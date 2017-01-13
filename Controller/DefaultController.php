@@ -11,13 +11,13 @@
 
 namespace Novosga\ReportsBundle\Controller;
 
+use DateTime;
 use Exception;
 use Novosga\Http\Envelope;
 use Novosga\Service\AtendimentoService;
 use Novosga\Service\UnidadeService;
 use Novosga\Service\UsuarioService;
 use Novosga\Util\DateUtil;
-use Novosga\Util\Strings;
 use Novosga\ReportsBundle\Helper\Grafico;
 use Novosga\ReportsBundle\Helper\Relatorio;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -38,16 +38,16 @@ class DefaultController extends Controller
     public function __construct()
     {
         $this->graficos = [
-            1 => new Grafico(_('Atendimentos por status'), 'pie', 'unidade,date-range'),
-            2 => new Grafico(_('Atendimentos por serviço'), 'pie', 'unidade,date-range'),
-            3 => new Grafico(_('Tempo médio do atendimento'), 'bar', 'unidade,date-range'),
+            1 => new Grafico(_('Atendimentos por status'), 'pie', 'date-range'),
+            2 => new Grafico(_('Atendimentos por serviço'), 'pie', 'date-range'),
+            3 => new Grafico(_('Tempo médio do atendimento'), 'bar', 'date-range'),
         ];
         $this->relatorios = [
             1 => new Relatorio(_('Serviços Disponíveis - Global'), 'servicos_disponiveis_global'),
-            2 => new Relatorio(_('Serviços Disponíveis - Unidade'), 'servicos_disponiveis_unidades', 'unidade'),
-            3 => new Relatorio(_('Serviços codificados'), 'servicos_codificados', 'unidade,date-range'),
-            4 => new Relatorio(_('Atendimentos concluídos'), 'atendimentos_concluidos', 'unidade,date-range'),
-            5 => new Relatorio(_('Atendimentos em todos os status'), 'atendimentos_status', 'unidade,date-range'),
+            2 => new Relatorio(_('Serviços Disponíveis - Unidade'), 'servicos_disponiveis_unidade'),
+            3 => new Relatorio(_('Serviços codificados'), 'servicos_codificados', 'date-range'),
+            4 => new Relatorio(_('Atendimentos concluídos'), 'atendimentos_concluidos', 'date-range'),
+            5 => new Relatorio(_('Atendimentos em todos os status'), 'atendimentos_status', 'date-range'),
             6 => new Relatorio(_('Tempos médios por Atendente'), 'tempo_medio_atendentes', 'date-range'),
             7 => new Relatorio(_('Lotações'), 'lotacoes', 'unidade'),
             8 => new Relatorio(_('Cargos'), 'cargos'),
@@ -62,74 +62,54 @@ class DefaultController extends Controller
      */
     public function indexAction(Request $request)
     {
-        $em = $this->getDoctrine()->getManager();
-        $query = $em->createQuery("SELECT e FROM Novosga\Entity\Unidade e WHERE e.status = 1 ORDER BY e.nome");
-        $unidades = $query->getResult();
+        $unidade = $this->getUnidade();
+        $date = new DateTime();
         
-        $arr = [];
-        foreach ($unidades as $u) {
-            $arr[$u->getId()] = $u->getNome();
-        }
+        $endDate = $date->format(_('d/m/Y'));
+        $date->sub(new \DateInterval('P1D'));
+        $startDate = $date->format(_('d/m/Y'));
         
         return $this->render('NovosgaReportsBundle:default:index.html.twig', [
-            'unidades' => $unidades,
+            'unidade' => $unidade,
             'relatorios' => $this->relatorios,
             'graficos' => $this->graficos,
             'statusAtendimento' => AtendimentoService::situacoes(),
-            'unidadesJson' => json_encode($arr),
-            'now' => (new DateTime())->format(_('d/m/Y'))
+            'startDate' => $startDate,
+            'endDate' => $endDate,
         ]);
     }
 
     /**
-     * Retorna os gráficos do dia a partir da unidade informada.
+     * 
+     * @param Request $request
+     * 
+     * @Route("/chart/{id}", name="novosga_reports_chart")
      */
-    public function today(Context $context)
+    public function chartAction(Request $request, $id)
     {
         $envelope = new Envelope();
         try {
-            $ini = (new DateTime())->format('Y-m-d');
-            $fim = DateUtil::nowSQL(); // full datetime
-            $unidade = (int) $request->get('unidade');
-            $status = $this->total_atendimentos_status($ini, $fim, $unidade);
-            $data = [
-                'legendas' => AtendimentoService::situacoes(),
-                'status' => $status[$unidade]
-            ];
-            $servicos = $this->total_atendimentos_servico($ini, $fim, $unidade);
-            $data['servicos'] = $servicos[$unidade];
-            $envelope->setData($data);
-        } catch (Exception $e) {
-            $envelope->exception($e);
-        }
-
-        return $this->json($envelope);
-    }
-
-    public function grafico(Context $context)
-    {
-        $envelope = new Envelope();
-        try {
-            $id = (int) $request->get('grafico');
             $dataInicial = $request->get('inicial');
             $dataFinal = $request->get('final').' 23:59:59';
-            $unidade = (int) $request->get('unidade');
-            $unidade = ($unidade > 0) ? $unidade : 0;
+            $unidade = $this->getUnidade();
+            
             if (!isset($this->graficos[$id])) {
                 throw new Exception(_('Gráfico inválido'));
             }
+            
             $grafico = $this->graficos[$id];
+            
             switch ($id) {
-            case 1:
-                $grafico->setLegendas(AtendimentoService::situacoes());
-                $grafico->setDados($this->total_atendimentos_status($dataInicial, $dataFinal, $unidade));
-                break;
-            case 2:
-                $grafico->setDados($this->total_atendimentos_servico($dataInicial, $dataFinal, $unidade));
-                break;
-            case 3:
-                $grafico->setDados($this->tempo_medio_atendimentos($dataInicial, $dataFinal, $unidade));
-                break;
+                case 1:
+                    $grafico->setLegendas(AtendimentoService::situacoes());
+                    $grafico->setDados($this->total_atendimentos_status($dataInicial, $dataFinal, $unidade));
+                    break;
+                case 2:
+                    $grafico->setDados($this->total_atendimentos_servico($dataInicial, $dataFinal, $unidade));
+                    break;
+                case 3:
+                    $grafico->setDados($this->tempo_medio_atendimentos($dataInicial, $dataFinal, $unidade));
+                    break;
             }
             $data = $grafico->jsonSerialize();
             $envelope->setData($data);
@@ -140,17 +120,25 @@ class DefaultController extends Controller
         return $this->json($envelope);
     }
 
-    public function relatorio(Context $context)
+    /**
+     * 
+     * @param Request $request
+     * 
+     * @Route("/report", name="novosga_reports_report")
+     */
+    public function reportAction(Request $request)
     {
         $id = (int) $request->get('relatorio');
         $dataInicial = $request->get('inicial');
         $dataFinal = $request->get('final');
-        $unidade = (int) $request->get('unidade');
-        $unidade = ($unidade > 0) ? $unidade : 0;
+        $unidade = $this->getUnidade();
+        $params = [];
+        
         if (isset($this->relatorios[$id])) {
             $relatorio = $this->relatorios[$id];
-            $this->app()->view()->set('dataInicial', DateUtil::format($dataInicial, _('d/m/Y')));
-            $this->app()->view()->set('dataFinal', DateUtil::format($dataFinal, _('d/m/Y')));
+            $params['dataInicial'] = DateUtil::format($dataInicial, _('d/m/Y'));
+            $params['dataFinal'] = DateUtil::format($dataFinal, _('d/m/Y'));
+            
             $dataFinal = $dataFinal.' 23:59:59';
             switch ($id) {
             case 1:
@@ -169,112 +157,94 @@ class DefaultController extends Controller
                 $relatorio->setDados($this->atendimentos_status($dataInicial, $dataFinal, $unidade));
                 break;
             case 6:
-                $relatorio->setDados($this->tempo_medio_atendentes($dataInicial, $dataFinal));
+                $relatorio->setDados($this->tempo_medio_atendentes($dataInicial, $dataFinal, $unidade));
                 break;
             case 7:
-                $servico = $request->get('servico');
-                $relatorio->setDados($this->lotacoes($unidade, $servico));
+                $relatorio->setDados($this->lotacoes($unidade));
                 break;
             case 8:
                 $relatorio->setDados($this->cargos());
                 break;
             }
-            $this->app()->view()->set('relatorio', $relatorio);
+            $params['relatorio'] = $relatorio;
+            $params['page'] = "NovosgaReportsBundle:relatorios:{$relatorio->getArquivo()}.html.twig";
         }
-        $this->app()->view()->set('page', "relatorios/{$relatorio->getArquivo()}.html.twig");
+        
+        return $this->render("NovosgaReportsBundle:default:relatorio.html.twig", $params);
     }
 
-    private function unidades()
+    private function total_atendimentos_status($dataInicial, $dataFinal, $unidade)
     {
-        $query = $this->em()->createQuery("SELECT e FROM Novosga\Entity\Unidade e WHERE e.status = 1 ORDER BY e.nome");
-
-        return $query->getResult();
-    }
-
-    private function unidadesArray($default = 0)
-    {
-        if ($default == 0) {
-            return $this->unidades();
-        } else {
-            $unidade = $this->em()->find('Novosga\Entity\Unidade', $default);
-            if (!$unidade) {
-                throw new \Exception('Invalid parameter');
-            }
-
-            return [$unidade];
-        }
-    }
-
-    private function total_atendimentos_status($dataInicial, $dataFinal, $unidadeId = 0)
-    {
-        $unidades = $this->unidadesArray($unidadeId);
         $dados = [];
         $status = AtendimentoService::situacoes();
-        $query = $this->em()->createQuery("
-            SELECT
-                COUNT(e) as total
-            FROM
-                Novosga\Entity\ViewAtendimento e
-            WHERE
-                e.dataChegada >= :inicio AND
-                e.dataChegada <= :fim AND
-                e.unidade = :unidade AND
-                e.status = :status
-        ");
-        $query->setParameter('inicio', $dataInicial);
-        $query->setParameter('fim', $dataFinal);
-        foreach ($unidades as $unidade) {
-            $dados[$unidade->getId()] = [];
-            // pegando todos os status
-            foreach ($status as $k => $v) {
+        $query = $this
+                ->getDoctrine()
+                ->getManager()
+                ->createQuery("
+                    SELECT
+                        COUNT(e) as total
+                    FROM
+                        Novosga\Entity\AtendimentoHistorico e
+                    WHERE
+                        e.dataChegada >= :inicio AND
+                        e.dataChegada <= :fim AND
+                        e.unidade = :unidade AND
+                        e.status = :status
+                ")
+                ->setParameters([
+                    'inicio' => $dataInicial
+                ]);
+                $query->setParameter('fim', $dataFinal);
                 $query->setParameter('unidade', $unidade->getId());
-                $query->setParameter('status', $k);
-                $rs = $query->getSingleResult();
-                $dados[$unidade->getId()][$k] = (int) $rs['total'];
-            }
+        
+        foreach ($status as $k => $v) {
+            $query->setParameter('status', $k);
+            $rs = $query->getSingleResult();
+            $dados[$k] = (int) $rs['total'];
         }
 
         return $dados;
     }
 
-    private function total_atendimentos_servico($dataInicial, $dataFinal, $unidadeId = 0)
+    private function total_atendimentos_servico($dataInicial, $dataFinal, $unidade)
     {
-        $unidades = $this->unidadesArray($unidadeId);
         $dados = [];
-        $query = $this->em()->createQuery("
-            SELECT
-                s.nome as servico,
-                COUNT(a) as total
-            FROM
-                Novosga\Entity\ViewAtendimento a
-                JOIN a.unidade u
-                JOIN a.servico s
-            WHERE
-                a.status = :status AND
-                a.dataChegada >= :inicio AND
-                a.dataChegada <= :fim AND
-                a.unidade = :unidade
-            GROUP BY
-                s
-        ");
-        $query->setParameter('status', AtendimentoService::ATENDIMENTO_ENCERRADO_CODIFICADO);
-        $query->setParameter('inicio', $dataInicial);
-        $query->setParameter('fim', $dataFinal);
-        foreach ($unidades as $unidade) {
-            $query->setParameter('unidade', $unidade->getId());
-            $rs = $query->getResult();
-            $dados[$unidade->getId()] = [];
-            foreach ($rs as $r) {
-                $dados[$unidade->getId()][$r['servico']] = $r['total'];
-            }
+        $rs = $this
+                ->getDoctrine()
+                ->getManager()
+                ->createQuery("
+                    SELECT
+                        s.nome as servico,
+                        COUNT(a) as total
+                    FROM
+                        Novosga\Entity\AtendimentoHistorico a
+                        JOIN a.unidade u
+                        JOIN a.servico s
+                    WHERE
+                        a.status = :status AND
+                        a.dataChegada >= :inicio AND
+                        a.dataChegada <= :fim AND
+                        a.unidade = :unidade
+                    GROUP BY
+                        s
+                ")
+                ->setParameters([
+                    'status' => AtendimentoService::ATENDIMENTO_ENCERRADO,
+                    'inicio' => $dataInicial,
+                    'fim' => $dataFinal,
+                    'unidade' => $unidade->getId()
+                ])
+                ->getResult();
+        
+        foreach ($rs as $r) {
+            $dados[$r['servico']] = $r['total'];
         }
 
         return $dados;
     }
 
-    private function tempo_medio_atendimentos($dataInicial, $dataFinal, $unidadeId = 0)
+    private function tempo_medio_atendimentos($dataInicial, $dataFinal, $unidade)
     {
-        $unidades = $this->unidadesArray($unidadeId);
         $dados = [];
         $tempos = [
             'espera'       => _('Tempo de Espera'),
@@ -289,31 +259,32 @@ class DefaultController extends Controller
                 AVG(a.dataFim - a.dataInicio) as atendimento,
                 AVG(a.dataFim - a.dataChegada) as total
             FROM
-                Novosga\Entity\ViewAtendimento a
+                Novosga\Entity\AtendimentoHistorico a
                 JOIN a.unidade u
             WHERE
                 a.dataChegada >= :inicio AND
                 a.dataChegada <= :fim AND
                 a.unidade = :unidade
         ";
-        $query = $this->em()->createQuery($dql);
+        $query = $this
+                ->getDoctrine()
+                ->getManager()
+                ->createQuery($dql);
         $query->setParameter('inicio', $dataInicial);
         $query->setParameter('fim', $dataFinal);
-        foreach ($unidades as $unidade) {
-            $query->setParameter('unidade', $unidade->getId());
-            $rs = $query->getResult();
-            $dados[$unidade->getId()] = [];
-            foreach ($rs as $r) {
-                try {
-                    // se der erro tentando converter a data do banco para segundos, assume que ja esta em segundos
-                    // Isso é necessário para manter a compatibilidade entre os bancos
-                    foreach ($tempos as $k => $v) {
-                        $dados[$unidade->getId()][$v] = DateUtil::timeToSec($r[$k]);
-                    }
-                } catch (\Exception $e) {
-                    foreach ($tempos as $k => $v) {
-                        $dados[$unidade->getId()][$v] = (int) $r[$k];
-                    }
+        $query->setParameter('unidade', $unidade->getId());
+            
+        $rs = $query->getResult();
+        foreach ($rs as $r) {
+            try {
+                // se der erro tentando converter a data do banco para segundos, assume que ja esta em segundos
+                // Isso é necessário para manter a compatibilidade entre os bancos
+                foreach ($tempos as $k => $v) {
+                    $dados[$v] = DateUtil::timeToSec($r[$k]);
+                }
+            } catch (\Exception $e) {
+                foreach ($tempos as $k => $v) {
+                    $dados[$v] = (int) $r[$k];
                 }
             }
         }
@@ -323,19 +294,23 @@ class DefaultController extends Controller
 
     private function servicos_disponiveis_global()
     {
-        $query = $this->em()->createQuery("
-            SELECT
-                e
-            FROM
-                Novosga\Entity\Servico e
-                LEFT JOIN e.subServicos sub
-            WHERE
-                e.mestre IS NULL
-            ORDER BY
-                e.nome
-        ");
+        $rs = $this
+                ->getDoctrine()
+                ->getManager()
+                ->createQuery("
+                    SELECT
+                        e
+                    FROM
+                        Novosga\Entity\Servico e
+                        LEFT JOIN e.subServicos sub
+                    WHERE
+                        e.mestre IS NULL
+                    ORDER BY
+                        e.nome
+                ")
+                ->getResult();
 
-        return $query->getResult();
+        return $rs;
     }
 
     /**
@@ -343,159 +318,182 @@ class DefaultController extends Controller
      *
      * @return array
      */
-    private function servicos_disponiveis_unidade($unidadeId = 0)
+    private function servicos_disponiveis_unidade($unidade)
     {
-        $unidades = $this->unidadesArray($unidadeId);
-        $dados = [];
-        $query = $this->em()->createQuery("
-            SELECT
-                e
-            FROM
-                Novosga\Entity\ServicoUnidade e
-                JOIN e.servico s
-                LEFT JOIN s.subServicos sub
-            WHERE
-                s.mestre IS NULL AND
-                e.status = 1 AND
-                e.unidade = :unidade
-            ORDER BY
-                s.nome
-        ");
-        foreach ($unidades as $unidade) {
-            $query->setParameter('unidade', $unidade);
-            $dados[$unidade->getId()] = [
-                'unidade'  => $unidade->getNome(),
-                'servicos' => $query->getResult(),
-            ];
-        }
+        $rs = $this
+                ->getDoctrine()
+                ->getManager()
+                ->createQuery("
+                    SELECT
+                        e
+                    FROM
+                        Novosga\Entity\ServicoUnidade e
+                        JOIN e.servico s
+                        LEFT JOIN s.subServicos sub
+                    WHERE
+                        s.mestre IS NULL AND
+                        e.status = 1 AND
+                        e.unidade = :unidade
+                    ORDER BY
+                        s.nome
+                ")
+                ->setParameter('unidade', $unidade)
+                ->getResult();
+        
+        $dados = [
+            'unidade'  => $unidade->getNome(),
+            'servicos' => $rs,
+        ];
 
         return $dados;
     }
 
-    private function servicos_codificados($dataInicial, $dataFinal, $unidadeId = 0)
+    private function servicos_codificados($dataInicial, $dataFinal, $unidade)
     {
-        $unidades = $this->unidadesArray($unidadeId);
-        $query = $this->em()->createQuery("
-            SELECT
-                COUNT(s.id) as total,
-                s.nome
-            FROM
-                Novosga\Entity\ViewAtendimentoCodificado c
-                JOIN c.servico s
-                JOIN c.atendimento e
-            WHERE
-                e.unidade = :unidade AND
-                e.dataChegada >= :dataInicial AND
-                e.dataChegada <= :dataFinal
-            GROUP BY
-                s
-            ORDER BY
-                s.nome
-        ");
-        $query->setParameter('dataInicial', $dataInicial);
-        $query->setParameter('dataFinal', $dataFinal);
-        $query->setMaxResults(self::MAX_RESULTS);
-        $dados = [];
-        foreach ($unidades as $unidade) {
-            $query->setParameter('unidade', $unidade);
-            $dados[$unidade->getId()] = [
-                'unidade'  => $unidade->getNome(),
-                'servicos' => $query->getResult(),
-            ];
-        }
+        $rs = $this
+                ->getDoctrine()
+                ->getManager()
+                        ->createQuery("
+                    SELECT
+                        COUNT(s.id) as total,
+                        s.nome
+                    FROM
+                        Novosga\Entity\AtendimentoCodificadoHistorico c
+                        JOIN c.servico s
+                        JOIN c.atendimento e
+                    WHERE
+                        e.unidade = :unidade AND
+                        e.dataChegada >= :dataInicial AND
+                        e.dataChegada <= :dataFinal
+                    GROUP BY
+                        s
+                    ORDER BY
+                        s.nome
+                ")
+                ->setParameters([
+                    'dataInicial' => $dataInicial,
+                    'dataFinal' => $dataFinal,
+                    'unidade' => $unidade,
+                ])
+                ->setMaxResults(self::MAX_RESULTS)
+                ->getResult();
+        
+        $dados = [
+            'unidade'  => $unidade->getNome(),
+            'servicos' => $rs,
+        ];
 
         return $dados;
     }
 
-    private function atendimentos_concluidos($dataInicial, $dataFinal, $unidadeId = 0)
+    private function atendimentos_concluidos($dataInicial, $dataFinal, $unidade)
     {
-        $unidades = $this->unidadesArray($unidadeId);
-        $dados = [];
-        $query = $this->em()->createQuery("
-            SELECT
-                e
-            FROM
-                Novosga\Entity\ViewAtendimento e
-            WHERE
-                e.unidade = :unidade AND
-                e.status = :status AND
-                e.dataChegada >= :dataInicial AND
-                e.dataChegada <= :dataFinal
-            ORDER BY
-                e.dataChegada
-        ");
-        $query->setParameter('status', AtendimentoService::ATENDIMENTO_ENCERRADO_CODIFICADO);
-        $query->setParameter('dataInicial', $dataInicial);
-        $query->setParameter('dataFinal', $dataFinal);
-        $query->setMaxResults(self::MAX_RESULTS);
-        foreach ($unidades as $unidade) {
-            $query->setParameter('unidade', $unidade);
-            $dados[$unidade->getId()] = [
-                'unidade'      => $unidade->getNome(),
-                'atendimentos' => $query->getResult(),
-            ];
-        }
+        $rs = $this
+                ->getDoctrine()
+                ->getManager()
+                ->createQuery("
+                    SELECT
+                        e
+                    FROM
+                        Novosga\Entity\AtendimentoHistorico e
+                    WHERE
+                        e.unidade = :unidade AND
+                        e.status = :status AND
+                        e.dataChegada >= :dataInicial AND
+                        e.dataChegada <= :dataFinal
+                    ORDER BY
+                        e.dataChegada
+                ")
+                ->setParameters([
+                    'status' => AtendimentoService::ATENDIMENTO_ENCERRADO,
+                    'dataInicial' => $dataInicial,
+                    'dataFinal' => $dataFinal,
+                    'unidade' => $unidade
+                ])
+                ->setMaxResults(self::MAX_RESULTS)
+                ->getResult();
+        
+        $dados = [
+            'unidade'      => $unidade->getNome(),
+            'atendimentos' => $rs,
+        ];
 
         return $dados;
     }
 
-    private function atendimentos_status($dataInicial, $dataFinal, $unidadeId = 0)
+    private function atendimentos_status($dataInicial, $dataFinal, $unidade)
     {
-        $unidades = $this->unidadesArray($unidadeId);
-        $dados = [];
-        $query = $this->em()->createQuery("
-            SELECT
-                e
-            FROM
-                Novosga\Entity\ViewAtendimento e
-            WHERE
-                e.unidade = :unidade AND
-                e.dataChegada >= :dataInicial AND
-                e.dataChegada <= :dataFinal
-            ORDER BY
-                e.dataChegada
-        ");
-        $query->setParameter('dataInicial', $dataInicial);
-        $query->setParameter('dataFinal', $dataFinal);
-        $query->setMaxResults(self::MAX_RESULTS);
-        foreach ($unidades as $unidade) {
-            $query->setParameter('unidade', $unidade);
-            $dados[$unidade->getId()] = [
-                'unidade'      => $unidade->getNome(),
-                'atendimentos' => $query->getResult(),
-            ];
-        }
+        $rs = $this
+                ->getDoctrine()
+                ->getManager()
+                ->createQuery("
+                    SELECT
+                        e
+                    FROM
+                        Novosga\Entity\AtendimentoHistorico e
+                    WHERE
+                        e.unidade = :unidade AND
+                        e.dataChegada >= :dataInicial AND
+                        e.dataChegada <= :dataFinal
+                    ORDER BY
+                        e.dataChegada
+                ")
+                ->setParameters([
+                    'dataInicial' => $dataInicial,
+                    'dataFinal' => $dataFinal,
+                    'unidade' => $unidade
+                ])
+                ->setMaxResults(self::MAX_RESULTS)
+                ->getResult();
+        
+        $dados = [
+            'unidade'      => $unidade->getNome(),
+            'atendimentos' => $rs,
+        ];
 
         return $dados;
     }
 
-    private function tempo_medio_atendentes($dataInicial, $dataFinal)
+    private function tempo_medio_atendentes($dataInicial, $dataFinal, $unidade)
     {
         $dados = [];
-        $query = $this->em()->createQuery("
-            SELECT
-                CONCAT(u.nome, CONCAT(' ', u.sobrenome)) as atendente,
-                COUNT(a) as total,
-                AVG(a.dataChamada - a.dataChegada) as espera,
-                AVG(a.dataInicio - a.dataChamada) as deslocamento,
-                AVG(a.dataFim - a.dataInicio) as atendimento,
-                AVG(a.dataFim - a.dataChegada) as tempoTotal
-            FROM
-                Novosga\Entity\ViewAtendimento a
-                JOIN a.usuario u
-            WHERE
-                a.dataChegada >= :dataInicial AND
-                a.dataChegada <= :dataFinal AND
-                a.dataFim IS NOT NULL
-            GROUP BY
-                u
-            ORDER BY
-                u.nome
-        ");
-        $query->setParameter('dataInicial', $dataInicial);
-        $query->setParameter('dataFinal', $dataFinal);
-        $query->setMaxResults(self::MAX_RESULTS);
-        $rs = $query->getResult();
+        $rs = $this
+                ->getDoctrine()
+                ->getManager()
+                ->createQuery("
+                    SELECT
+                        CONCAT(u.nome, CONCAT(' ', u.sobrenome)) as atendente,
+                        COUNT(a) as total,
+                        AVG(a.dataChamada - a.dataChegada) as espera,
+                        AVG(a.dataInicio - a.dataChamada) as deslocamento,
+                        AVG(a.dataFim - a.dataInicio) as atendimento,
+                        AVG(a.dataFim - a.dataChegada) as tempoTotal
+                    FROM
+                        Novosga\Entity\AtendimentoHistorico a
+                        JOIN a.usuario u
+                    WHERE
+                        a.unidade = :unidade AND
+                        a.dataChegada >= :dataInicial AND
+                        a.dataChegada <= :dataFinal AND
+                        a.dataFim IS NOT NULL
+                    GROUP BY
+                        u
+                    ORDER BY
+                        u.nome
+                ")
+                ->setParameters([
+                    'unidade' => $unidade,
+                    'dataInicial' => $dataInicial,
+                    'dataFinal' => $dataFinal,
+                ])
+                ->setMaxResults(self::MAX_RESULTS)
+                ->getResult();
+        
+        $dados = [
+            'unidade' => $unidade->getNome(),
+            'atendentes' => []
+        ];
+        
         foreach ($rs as $r) {
             $d = [
                 'atendente' => $r['atendente'],
@@ -514,7 +512,7 @@ class DefaultController extends Controller
                 $d['atendimento'] = $r['atendimento'];
                 $d['tempoTotal'] = $r['tempoTotal'];
             }
-            $dados[] = $d;
+            $dados['atendentes'][] = $d;
         }
 
         return $dados;
@@ -525,31 +523,44 @@ class DefaultController extends Controller
      *
      * @return array
      */
-    private function lotacoes($unidadeId = 0, $nomeServico = '')
+    private function lotacoes($unidade, $nomeServico = '')
     {
-        $nomeServico = trim($nomeServico);
-        if (!empty($nomeServico)) {
-            $nomeServico = "%$nomeServico%";
+        $em = $this->getDoctrine()->getManager();
+
+        $usuarioService = new UsuarioService($em);
+        $unidadeService = new UnidadeService($em);
+
+        $lotacoes = $em
+                ->createQuery("
+                    SELECT
+                        e, usu, uni, c
+                    FROM
+                        Novosga\Entity\Lotacao e
+                        JOIN e.usuario usu
+                        JOIN e.unidade uni
+                        JOIN e.cargo c
+                    WHERE
+                        uni = :unidade
+                    ORDER BY
+                        usu.nome
+                ")
+                ->setParameters([
+                    'unidade' => $unidade
+                ])
+                ->setMaxResults(self::MAX_RESULTS)
+                ->getResult();
+        
+        
+        $servicos = [];
+        foreach ($lotacoes as $lotacao) {
+            $servicos[$lotacao->getUsuario()->getId()] = $usuarioService->servicos($lotacao->getUsuario(), $unidade);
         }
-
-        $unidades = $this->unidadesArray($unidadeId);
-        $dados = [];
-
-        $usuarioService = new UsuarioService($this->em());
-        $unidadeService = new UnidadeService($this->em());
-
-        foreach ($unidades as $unidade) {
-            $lotacoes = $unidadeService->lotacoesComServico($unidade->getId(), $nomeServico);
-            $servicos = [];
-            foreach ($lotacoes as $lotacao) {
-                $servicos[$lotacao->getUsuario()->getId()] = $usuarioService->servicos($lotacao->getUsuario(), $unidade);
-            }
-            $dados[$unidade->getId()] = [
-                'unidade'  => $unidade->getNome(),
-                'lotacoes' => $lotacoes,
-                'servicos' => $servicos,
-            ];
-        }
+        
+        $dados = [
+            'unidade'  => $unidade->getNome(),
+            'lotacoes' => $lotacoes,
+            'servicos' => $servicos,
+        ];
 
         return $dados;
     }
@@ -562,15 +573,29 @@ class DefaultController extends Controller
     private function cargos()
     {
         $dados = [];
-        $query = $this->em()->createQuery("SELECT e FROM Novosga\Entity\Cargo e ORDER BY e.nome");
+        $query = $this
+                ->getDoctrine()
+                ->getManager()
+                ->createQuery("SELECT e FROM Novosga\Entity\Cargo e ORDER BY e.nome");
         $cargos = $query->getResult();
         foreach ($cargos as $cargo) {
             $dados[$cargo->getId()] = [
                 'cargo'      => $cargo->getNome(),
-                'permissoes' => $cargo->getPermissoes(),
+                'permissoes' => $cargo->getModulos(),
             ];
         }
 
         return $dados;
+    }
+    
+    /**
+     * @return \Novosga\Entity\Unidade
+     */
+    private function getUnidade()
+    {
+        $usuario = $this->getUser();
+        $unidade = $usuario->getLotacao()->getUnidade();
+        
+        return $unidade;
     }
 }

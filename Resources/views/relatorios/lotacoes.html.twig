@@ -1,6 +1,5 @@
-{% for dado in relatorio.dados %}
 <div class="header">
-    <h2>{{ dado.unidade }}</h2>
+    <h2>{{ relatorio.dados.unidade }}</h2>
 </div>
 <table class="table table-striped">
     <thead>
@@ -8,21 +7,19 @@
             <th>{% trans %}Usuário{% endtrans %}</th>
             <th>{% trans %}Nome{% endtrans %}</th>
             <th>{% trans %}Cargo{% endtrans %}</th>
-            <th>{% trans %}Grupo{% endtrans %}</th>
             <th>{% trans %}Serviços{% endtrans %}</th>
             <th>{% trans %}Status{% endtrans %}</th>
         </tr>
     </thead>
     <tbody>
-        {% for lotacao in dado.lotacoes %}
+        {% for lotacao in relatorio.dados.lotacoes %}
         <tr>
             <td class="strong">{{ lotacao.usuario.login }}</td>
             <td>{{ lotacao.usuario.nomeCompleto }}</td>
             <td>{{ lotacao.cargo.nome }}</td>
-            <td>{{ lotacao.grupo.nome }}</td>
             <td>
                 <ul>
-                {% for su in dado.servicos[lotacao.usuario.id] %}
+                {% for su in relatorio.dados.servicos[lotacao.usuario.id] %}
                     <li>{{ su.servico.nome }}</li>
                 {% endfor %}
                 </ul>
@@ -38,4 +35,3 @@
         {% endfor %}
     </tbody>
 </table>
-{% endfor %}
