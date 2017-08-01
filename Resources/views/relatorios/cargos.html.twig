@@ -1,19 +1,19 @@
 {% for dado in relatorio.dados %}
-<div class="header">
-    <h2>{{ dado.cargo }}</h2>
-</div>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>{% trans %}Módulos{% endtrans %}</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for permissao in dado.permissoes %}
-        <tr>
-            <td>{{ permissao }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+    <div class="header">
+        <h2>{{ dado.perfil }}</h2>
+    </div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>{% trans %}Módulos{% endtrans %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for permissao in dado.permissoes %}
+                <tr>
+                    <td>{{ permissao }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endfor %}

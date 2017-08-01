@@ -50,14 +50,14 @@ class DefaultController extends Controller
             5 => new Relatorio(_('Atendimentos em todos os status'), 'atendimentos_status', 'date-range'),
             6 => new Relatorio(_('Tempos médios por Atendente'), 'tempo_medio_atendentes', 'date-range'),
             7 => new Relatorio(_('Lotações'), 'lotacoes', 'unidade'),
-            8 => new Relatorio(_('Cargos'), 'cargos'),
+            8 => new Relatorio(_('Perfis'), 'perfis'),
         ];
     }
 
     /**
-     * 
+     *
      * @param Request $request
-     * 
+     *
      * @Route("/", name="novosga_reports_index")
      */
     public function indexAction(Request $request)
@@ -80,9 +80,9 @@ class DefaultController extends Controller
     }
 
     /**
-     * 
+     *
      * @param Request $request
-     * 
+     *
      * @Route("/chart/{id}", name="novosga_reports_chart")
      */
     public function chartAction(Request $request, $id)
@@ -102,13 +102,13 @@ class DefaultController extends Controller
             switch ($id) {
                 case 1:
                     $grafico->setLegendas(AtendimentoService::situacoes());
-                    $grafico->setDados($this->total_atendimentos_status($dataInicial, $dataFinal, $unidade));
+                    $grafico->setDados($this->totalAtendimentosStatus($dataInicial, $dataFinal, $unidade));
                     break;
                 case 2:
-                    $grafico->setDados($this->total_atendimentos_servico($dataInicial, $dataFinal, $unidade));
+                    $grafico->setDados($this->totalAtendimentosServico($dataInicial, $dataFinal, $unidade));
                     break;
                 case 3:
-                    $grafico->setDados($this->tempo_medio_atendimentos($dataInicial, $dataFinal, $unidade));
+                    $grafico->setDados($this->tempoMedioAtendimentos($dataInicial, $dataFinal, $unidade));
                     break;
             }
             $data = $grafico->jsonSerialize();
@@ -121,9 +121,9 @@ class DefaultController extends Controller
     }
 
     /**
-     * 
+     *
      * @param Request $request
-     * 
+     *
      * @Route("/report", name="novosga_reports_report")
      */
     public function reportAction(Request $request)
@@ -141,30 +141,30 @@ class DefaultController extends Controller
             
             $dataFinal = $dataFinal.' 23:59:59';
             switch ($id) {
-            case 1:
-                $relatorio->setDados($this->servicos_disponiveis_global());
-                break;
-            case 2:
-                $relatorio->setDados($this->servicos_disponiveis_unidade($unidade));
-                break;
-            case 3:
-                $relatorio->setDados($this->servicos_codificados($dataInicial, $dataFinal, $unidade));
-                break;
-            case 4:
-                $relatorio->setDados($this->atendimentos_concluidos($dataInicial, $dataFinal, $unidade));
-                break;
-            case 5:
-                $relatorio->setDados($this->atendimentos_status($dataInicial, $dataFinal, $unidade));
-                break;
-            case 6:
-                $relatorio->setDados($this->tempo_medio_atendentes($dataInicial, $dataFinal, $unidade));
-                break;
-            case 7:
-                $relatorio->setDados($this->lotacoes($unidade));
-                break;
-            case 8:
-                $relatorio->setDados($this->cargos());
-                break;
+                case 1:
+                    $relatorio->setDados($this->servicosDisponiveisGlobal());
+                    break;
+                case 2:
+                    $relatorio->setDados($this->servicosDisponiveisUnidade($unidade));
+                    break;
+                case 3:
+                    $relatorio->setDados($this->servicosCodificados($dataInicial, $dataFinal, $unidade));
+                    break;
+                case 4:
+                    $relatorio->setDados($this->atendimentosConcluidos($dataInicial, $dataFinal, $unidade));
+                    break;
+                case 5:
+                    $relatorio->setDados($this->atendimentosStatus($dataInicial, $dataFinal, $unidade));
+                    break;
+                case 6:
+                    $relatorio->setDados($this->tempoMedioAtendentes($dataInicial, $dataFinal, $unidade));
+                    break;
+                case 7:
+                    $relatorio->setDados($this->lotacoes($unidade));
+                    break;
+                case 8:
+                    $relatorio->setDados($this->perfis());
+                    break;
             }
             $params['relatorio'] = $relatorio;
             $params['page'] = "NovosgaReportsBundle:relatorios:{$relatorio->getArquivo()}.html.twig";
@@ -173,7 +173,7 @@ class DefaultController extends Controller
         return $this->render("NovosgaReportsBundle:default:relatorio.html.twig", $params);
     }
 
-    private function total_atendimentos_status($dataInicial, $dataFinal, $unidade)
+    private function totalAtendimentosStatus($dataInicial, $dataFinal, $unidade)
     {
         $dados = [];
         $status = AtendimentoService::situacoes();
@@ -206,7 +206,7 @@ class DefaultController extends Controller
         return $dados;
     }
 
-    private function total_atendimentos_servico($dataInicial, $dataFinal, $unidade)
+    private function totalAtendimentosServico($dataInicial, $dataFinal, $unidade)
     {
         $dados = [];
         $rs = $this
@@ -243,7 +243,7 @@ class DefaultController extends Controller
         return $dados;
     }
 
-    private function tempo_medio_atendimentos($dataInicial, $dataFinal, $unidade)
+    private function tempoMedioAtendimentos($dataInicial, $dataFinal, $unidade)
     {
         $dados = [];
         $tempos = [
@@ -292,7 +292,7 @@ class DefaultController extends Controller
         return $dados;
     }
 
-    private function servicos_disponiveis_global()
+    private function servicosDisponiveisGlobal()
     {
         $rs = $this
                 ->getDoctrine()
@@ -318,7 +318,7 @@ class DefaultController extends Controller
      *
      * @return array
      */
-    private function servicos_disponiveis_unidade($unidade)
+    private function servicosDisponiveisUnidade($unidade)
     {
         $rs = $this
                 ->getDoctrine()
@@ -332,7 +332,7 @@ class DefaultController extends Controller
                         LEFT JOIN s.subServicos sub
                     WHERE
                         s.mestre IS NULL AND
-                        e.status = 1 AND
+                        e.ativo = TRUE AND
                         e.unidade = :unidade
                     ORDER BY
                         s.nome
@@ -348,7 +348,7 @@ class DefaultController extends Controller
         return $dados;
     }
 
-    private function servicos_codificados($dataInicial, $dataFinal, $unidade)
+    private function servicosCodificados($dataInicial, $dataFinal, $unidade)
     {
         $rs = $this
                 ->getDoctrine()
@@ -386,7 +386,7 @@ class DefaultController extends Controller
         return $dados;
     }
 
-    private function atendimentos_concluidos($dataInicial, $dataFinal, $unidade)
+    private function atendimentosConcluidos($dataInicial, $dataFinal, $unidade)
     {
         $rs = $this
                 ->getDoctrine()
@@ -421,7 +421,7 @@ class DefaultController extends Controller
         return $dados;
     }
 
-    private function atendimentos_status($dataInicial, $dataFinal, $unidade)
+    private function atendimentosStatus($dataInicial, $dataFinal, $unidade)
     {
         $rs = $this
                 ->getDoctrine()
@@ -454,7 +454,7 @@ class DefaultController extends Controller
         return $dados;
     }
 
-    private function tempo_medio_atendentes($dataInicial, $dataFinal, $unidade)
+    private function tempoMedioAtendentes($dataInicial, $dataFinal, $unidade)
     {
         $dados = [];
         $rs = $this
@@ -519,7 +519,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * Retorna todos os usuarios e cargos (lotação) por unidade.
+     * Retorna todos os usuarios e perfis (lotação) por unidade.
      *
      * @return array
      */
@@ -538,7 +538,7 @@ class DefaultController extends Controller
                         Novosga\Entity\Lotacao e
                         JOIN e.usuario usu
                         JOIN e.unidade uni
-                        JOIN e.cargo c
+                        JOIN e.perfil c
                     WHERE
                         uni = :unidade
                     ORDER BY
@@ -566,22 +566,22 @@ class DefaultController extends Controller
     }
 
     /**
-     * Retorna todos os cargos e suas permissões.
+     * Retorna todos os perfis e suas permissões.
      *
      * @return array
      */
-    private function cargos()
+    private function perfis()
     {
         $dados = [];
         $query = $this
                 ->getDoctrine()
                 ->getManager()
-                ->createQuery("SELECT e FROM Novosga\Entity\Cargo e ORDER BY e.nome");
-        $cargos = $query->getResult();
-        foreach ($cargos as $cargo) {
-            $dados[$cargo->getId()] = [
-                'cargo'      => $cargo->getNome(),
-                'permissoes' => $cargo->getModulos(),
+                ->createQuery("SELECT e FROM Novosga\Entity\Perfil e ORDER BY e.nome");
+        $perfis = $query->getResult();
+        foreach ($perfis as $perfil) {
+            $dados[$perfil->getId()] = [
+                'perfil'      => $perfil->getNome(),
+                'permissoes' => $perfil->getModulos(),
             ];
         }
 

@@ -10,19 +10,19 @@
     </thead>
     <tbody>
         {% for su in relatorio.dados.servicos %}
-        <tr>
-            <td class="w25 center">{{ su.sigla }}</td>
-            <td class="strong">
-                {{ su.servico.nome }}
-                {% if su.servico.subServicos|length %}
-                    <ul>
-                        {% for subServico in su.servico.subServicos %}
-                            <li>{{ subServico.nome }}</li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-            </td>
-        </tr>
+            <tr>
+                <td class="w25 center">{{ su.sigla }}</td>
+                <td class="strong">
+                    {{ su.servico.nome }}
+                    {% if su.servico.subServicos|length %}
+                        <ul>
+                            {% for subServico in su.servico.subServicos %}
+                                <li>{{ subServico.nome }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </td>
+            </tr>
         {% endfor %}
     </tbody>
 </table>

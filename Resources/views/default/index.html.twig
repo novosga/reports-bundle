@@ -1,14 +1,20 @@
-{% extends "base.html.twig" %}
+{% extends "NovosgaReportsBundle::base.html.twig" %}
 
 {% block body %}
-    <h1>
-        <i class="fa fa-desktop" aria-hidden="true"></i>
-        {% trans %}Relatórios{% endtrans %}
-        <small>
-            {% trans %}Relatórios e gráficos do sistema.{% endtrans %}
-        </small>
-    </h1>
-        
+    <div class="row">
+        <div class="col-sm-12">
+            <h1>
+                <i class="fa fa-desktop" aria-hidden="true"></i>
+                {% trans %}Relatórios{% endtrans %}
+                <small>
+                    {% trans %}Relatórios e gráficos do sistema.{% endtrans %}
+                </small>
+            </h1>
+        </div>
+    </div>
+
+    <hr>
+    
     <ul class="nav nav-tabs">
         <li class="active">
             <a href="#tab-graficos" data-toggle="tab">

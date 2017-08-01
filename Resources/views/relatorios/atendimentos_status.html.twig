@@ -18,21 +18,21 @@
     </thead>
     <tbody>
         {% for a in relatorio.dados.atendimentos %}
-        <tr>
-            <td>{{ a.senha.sigla }}{{ a.senha.numero }}</td>
-            <td>{{ a.cliente.nome }}</td>
-            <td>{{ a.dataChegada|date('d/m/Y') }}</td>
-            <td>{{ a.dataChamada|date('H:i:s') }}</td>
-            <td>{{ a.dataInicio|date('H:i:s') }}</td>
-            <td>{{ a.dataFim|date('H:i:s') }}</td>
-            <td>{{ a.servico.nome }}</td>
-            <td>{{ a.nomeStatus }}</td>
-            <td>
-                {%- if a.usuario -%}
-                    {{ a.usuario.login }}
-                {%- endif -%}
-            </td>
-        </tr>
+            <tr>
+                <td>{{ a.senha.sigla }}{{ a.senha.numero }}</td>
+                <td>{{ a.cliente.nome }}</td>
+                <td>{{ a.dataChegada|date('d/m/Y') }}</td>
+                <td>{{ a.dataChamada|date('H:i:s') }}</td>
+                <td>{{ a.dataInicio|date('H:i:s') }}</td>
+                <td>{{ a.dataFim|date('H:i:s') }}</td>
+                <td>{{ a.servico.nome }}</td>
+                <td>{{ a.nomeStatus }}</td>
+                <td>
+                    {%- if a.usuario -%}
+                        {{ a.usuario.login }}
+                    {%- endif -%}
+                </td>
+            </tr>
         {% endfor %}
     </tbody>
     <tfoot>

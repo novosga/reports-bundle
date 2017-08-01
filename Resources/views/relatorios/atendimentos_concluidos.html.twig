@@ -18,35 +18,35 @@
     </thead>
     <tbody>
         {% for a in relatorio.dados.atendimentos %}
-        <tr>
-            <td rowspan="2" class="vam tac">{{ a.senha.sigla }}{{ a.senha.numero }}</td>
-            <td>{{ a.dataChegada|date('d/m/Y') }}</td>
-            <td>{{ a.dataChamada|date('H:i:s') }}</td>
-            <td>{{ a.dataInicio|date('H:i:s') }}</td>
-            <td>{{ a.dataFim|date('H:i:s') }}</td>
-            <td>{{ a.tempoAtendimento|date('%H:%I:%S') }}</td>
-            <td>{{ a.tempoPermanencia|date('%H:%I:%S') }}</td>
-            <td>{{ a.servico.nome }}</td>
-            <td>{{ a.usuario.login }}</td>
-        </tr>
-        <tr>
-            <td colspan="10" class="sub-table">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>{% trans %}Serviços realizados{% endtrans %}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for c in a.codificados %}
-                        <tr>
-                            <td>{{c.servico.nome}}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </td>
-        </tr>
+            <tr>
+                <td rowspan="2" class="vam tac">{{ a.senha.sigla }}{{ a.senha.numero }}</td>
+                <td>{{ a.dataChegada|date('d/m/Y') }}</td>
+                <td>{{ a.dataChamada|date('H:i:s') }}</td>
+                <td>{{ a.dataInicio|date('H:i:s') }}</td>
+                <td>{{ a.dataFim|date('H:i:s') }}</td>
+                <td>{{ a.tempoAtendimento|date('%H:%I:%S') }}</td>
+                <td>{{ a.tempoPermanencia|date('%H:%I:%S') }}</td>
+                <td>{{ a.servico.nome }}</td>
+                <td>{{ a.usuario.login }}</td>
+            </tr>
+            <tr>
+                <td colspan="10" class="sub-table">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>{% trans %}Serviços realizados{% endtrans %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for c in a.codificados %}
+                            <tr>
+                                <td>{{c.servico.nome}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
         {% endfor %}
     </tbody>
     <tfoot>

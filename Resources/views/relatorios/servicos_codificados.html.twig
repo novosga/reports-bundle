@@ -12,11 +12,11 @@
     <tbody>
         {% set total = 0 %}
         {% for s in relatorio.dados.servicos %}
-        <tr>
-            <td>{{ s.nome }}</td>
-            <td>{{ s.total }}</td>
-            {% set total = total + s.total %}
-        </tr>
+            <tr>
+                <td>{{ s.nome }}</td>
+                <td>{{ s.total }}</td>
+                {% set total = total + s.total %}
+            </tr>
         {% endfor %}
     </tbody>
     <tfoot>

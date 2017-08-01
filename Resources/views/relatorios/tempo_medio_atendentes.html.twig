@@ -15,14 +15,14 @@
     </thead>
     <tbody>
         {% for dado in relatorio.dados.atendentes %}
-        <tr>
-            <td class="strong">{{ dado.atendente }}</td>
-            <td>{{ dado.total }}</td>
-            <td>{{ dado.espera }}</td>
-            <td>{{ dado.deslocamento }}</td>
-            <td>{{ dado.atendimento }}</td>
-            <td>{{ dado.tempoTotal }}</td>
-        </tr>
+            <tr>
+                <td class="strong">{{ dado.atendente }}</td>
+                <td>{{ dado.total }}</td>
+                <td>{{ dado.espera }}</td>
+                <td>{{ dado.deslocamento }}</td>
+                <td>{{ dado.atendimento }}</td>
+                <td>{{ dado.tempoTotal }}</td>
+            </tr>
         {% endfor %}
     </tbody>
 </table>
