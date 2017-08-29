@@ -1,4 +1,4 @@
-<table class="table table-striped">
+<table class="table table-bordered">
     <thead>
         <tr>
             <th>{% trans %}Serviço{% endtrans %}</th>
@@ -20,7 +20,13 @@
             {% if servico.subServicos|length %}
                 <tr class="sub-table">
                     <td colspan="2">
-                        <table class="table table-striped subservicos">
+                        <table class="table table-bordered table-striped subservicos">
+                            <thead>
+                                <tr>
+                                    <th>{% trans %}Subserviço{% endtrans %}</th>
+                                    <th>{% trans %}Situação{% endtrans %}</th>
+                                </tr>
+                            </thead>
                             <tbody>
                                 {% for subServico in servico.subServicos %}
                                 <tr>
