@@ -15,8 +15,6 @@ use DateTime;
 use Exception;
 use Novosga\Http\Envelope;
 use Novosga\Service\AtendimentoService;
-use Novosga\Service\UnidadeService;
-use Novosga\Service\UsuarioService;
 use Novosga\Util\DateUtil;
 use Novosga\ReportsBundle\Helper\Grafico;
 use Novosga\ReportsBundle\Helper\Relatorio;
@@ -525,28 +523,26 @@ class DefaultController extends Controller
      */
     private function lotacoes($unidade, $nomeServico = '')
     {
-        $em = $this->getDoctrine()->getManager();
+        /* @var $usuarioService \Novosga\Service\UsuarioService */
+        $usuarioService = $this->get('Novosga\Service\UsuarioService');
 
-        $usuarioService = new UsuarioService($em);
-        $unidadeService = new UnidadeService($em);
-
-        $lotacoes = $em
-                ->createQuery("
-                    SELECT
-                        e, usu, uni, c
-                    FROM
-                        Novosga\Entity\Lotacao e
-                        JOIN e.usuario usu
-                        JOIN e.unidade uni
-                        JOIN e.perfil c
-                    WHERE
-                        uni = :unidade
-                    ORDER BY
-                        usu.nome
-                ")
+        $lotacoes = $this
+                ->getDoctrine()
+                ->getManager()
+                ->createQueryBuilder()
+                ->select([
+                    'e', 'usu', 'uni', 'c'
+                ])
+                ->from(\Novosga\Entity\Lotacao::class, 'e')
+                ->join('e.usuario', 'usu')
+                ->join('e.unidade', 'uni')
+                ->join('e.perfil', 'c')
+                ->where('uni = :unidade')
+                ->orderBy('usu.nome', 'ASC')
                 ->setParameters([
                     'unidade' => $unidade
                 ])
+                ->getQuery()
                 ->setMaxResults(self::MAX_RESULTS)
                 ->getResult();
         
