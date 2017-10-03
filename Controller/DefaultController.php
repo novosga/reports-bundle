@@ -67,7 +67,7 @@ class DefaultController extends Controller
         $date->sub(new \DateInterval('P1D'));
         $startDate = $date->format(_('d/m/Y'));
         
-        return $this->render('NovosgaReportsBundle:default:index.html.twig', [
+        return $this->render('@NovosgaReports/default/index.html.twig', [
             'unidade' => $unidade,
             'relatorios' => $this->relatorios,
             'graficos' => $this->graficos,
@@ -168,7 +168,7 @@ class DefaultController extends Controller
             $params['page'] = "NovosgaReportsBundle:relatorios:{$relatorio->getArquivo()}.html.twig";
         }
         
-        return $this->render("NovosgaReportsBundle:default:relatorio.html.twig", $params);
+        return $this->render("NovosgaReports/default/relatorio.html.twig", $params);
     }
 
     private function totalAtendimentosStatus($dataInicial, $dataFinal, $unidade)
