@@ -11,16 +11,19 @@
 
 namespace Novosga\ReportsBundle\Controller;
 
+use DateInterval;
 use DateTime;
 use Exception;
+use Novosga\Entity\Lotacao;
+use Novosga\Entity\Unidade;
 use Novosga\Http\Envelope;
-use Novosga\Service\AtendimentoService;
-use Novosga\Util\DateUtil;
 use Novosga\ReportsBundle\Helper\Grafico;
 use Novosga\ReportsBundle\Helper\Relatorio;
+use Novosga\Service\AtendimentoService;
+use Novosga\Service\UsuarioService;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 
 /**
  *
@@ -64,7 +67,7 @@ class DefaultController extends Controller
         $date = new DateTime();
         
         $endDate = $date->format(_('d/m/Y'));
-        $date->sub(new \DateInterval('P1D'));
+        $date->sub(new DateInterval('P1D'));
         $startDate = $date->format(_('d/m/Y'));
         
         return $this->render('@NovosgaReports/default/index.html.twig', [
@@ -86,34 +89,32 @@ class DefaultController extends Controller
     public function chartAction(Request $request, $id)
     {
         $envelope = new Envelope();
-        try {
-            $dataInicial = $request->get('inicial');
-            $dataFinal = $request->get('final').' 23:59:59';
-            $unidade = $this->getUnidade();
-            
-            if (!isset($this->graficos[$id])) {
-                throw new Exception(_('Gráfico inválido'));
-            }
-            
-            $grafico = $this->graficos[$id];
-            
-            switch ($id) {
-                case 1:
-                    $grafico->setLegendas(AtendimentoService::situacoes());
-                    $grafico->setDados($this->totalAtendimentosStatus($dataInicial, $dataFinal, $unidade));
-                    break;
-                case 2:
-                    $grafico->setDados($this->totalAtendimentosServico($dataInicial, $dataFinal, $unidade));
-                    break;
-                case 3:
-                    $grafico->setDados($this->tempoMedioAtendimentos($dataInicial, $dataFinal, $unidade));
-                    break;
-            }
-            $data = $grafico->jsonSerialize();
-            $envelope->setData($data);
-        } catch (\Exception $e) {
-            $envelope->exception($e);
+        
+        $dataInicial = $request->get('inicial');
+        $dataFinal = $request->get('final').' 23:59:59';
+        $unidade = $this->getUnidade();
+
+        if (!isset($this->graficos[$id])) {
+            throw new Exception(_('Gráfico inválido'));
         }
+
+        $grafico = $this->graficos[$id];
+
+        switch ($id) {
+            case 1:
+                $grafico->setLegendas(AtendimentoService::situacoes());
+                $grafico->setDados($this->totalAtendimentosStatus($dataInicial, $dataFinal, $unidade));
+                break;
+            case 2:
+                $grafico->setDados($this->totalAtendimentosServico($dataInicial, $dataFinal, $unidade));
+                break;
+            case 3:
+                $grafico->setDados($this->tempoMedioAtendimentos($dataInicial, $dataFinal, $unidade));
+                break;
+        }
+        
+        $data = $grafico->jsonSerialize();
+        $envelope->setData($data);
 
         return $this->json($envelope);
     }
@@ -124,7 +125,7 @@ class DefaultController extends Controller
      *
      * @Route("/report", name="novosga_reports_report")
      */
-    public function reportAction(Request $request)
+    public function reportAction(Request $request, UsuarioService $usuarioService)
     {
         $id = (int) $request->get('relatorio');
         $dataInicial = $request->get('inicial');
@@ -158,7 +159,7 @@ class DefaultController extends Controller
                     $relatorio->setDados($this->tempoMedioAtendentes($dataInicial, $dataFinal, $unidade));
                     break;
                 case 7:
-                    $relatorio->setDados($this->lotacoes($unidade));
+                    $relatorio->setDados($this->lotacoes($usuarioService, $unidade));
                     break;
                 case 8:
                     $relatorio->setDados($this->perfis());
@@ -521,11 +522,8 @@ class DefaultController extends Controller
      *
      * @return array
      */
-    private function lotacoes($unidade, $nomeServico = '')
+    private function lotacoes(UsuarioService $usuarioService, $unidade, $nomeServico = '')
     {
-        /* @var $usuarioService \Novosga\Service\UsuarioService */
-        $usuarioService = $this->get('Novosga\Service\UsuarioService');
-
         $lotacoes = $this
                 ->getDoctrine()
                 ->getManager()
@@ -533,7 +531,7 @@ class DefaultController extends Controller
                 ->select([
                     'e', 'usu', 'uni', 'c'
                 ])
-                ->from(\Novosga\Entity\Lotacao::class, 'e')
+                ->from(Lotacao::class, 'e')
                 ->join('e.usuario', 'usu')
                 ->join('e.unidade', 'uni')
                 ->join('e.perfil', 'c')
@@ -585,7 +583,7 @@ class DefaultController extends Controller
     }
     
     /**
-     * @return \Novosga\Entity\Unidade
+     * @return Unidade
      */
     private function getUnidade()
     {
