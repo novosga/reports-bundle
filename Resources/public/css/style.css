@@ -1,7 +1,14 @@
 /**
- * Novo SGA - Estatisticas
+ * Novo SGA - Reports
  * @author Rogerio Lino <rogeriolino@gmail.com>
  */
+body>section {
+    padding: 20px 10px;
+}
+
+.tab-content {
+    padding: 20px 0;
+}
 
 .chart-title {
     padding: 20px 0 10px 0;
