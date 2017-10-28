@@ -11,14 +11,11 @@
 
 namespace Novosga\ReportsBundle\Controller;
 
-use DateInterval;
 use DateTime;
 use Exception;
 use Novosga\Entity\Lotacao;
 use Novosga\Entity\Unidade;
 use Novosga\Http\Envelope;
-use Novosga\ReportsBundle\Helper\Grafico;
-use Novosga\ReportsBundle\Helper\Relatorio;
 use Novosga\Service\AtendimentoService;
 use Novosga\Service\UsuarioService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -33,28 +30,6 @@ class DefaultController extends Controller
 {
     const MAX_RESULTS = 1000;
 
-    private $graficos;
-    private $relatorios;
-
-    public function __construct()
-    {
-        $this->graficos = [
-            1 => new Grafico(_('Atendimentos por status'), 'pie', 'date-range'),
-            2 => new Grafico(_('Atendimentos por serviço'), 'pie', 'date-range'),
-            3 => new Grafico(_('Tempo médio do atendimento'), 'bar', 'date-range'),
-        ];
-        $this->relatorios = [
-            1 => new Relatorio(_('Serviços Disponíveis - Global'), 'servicos_disponiveis_global'),
-            2 => new Relatorio(_('Serviços Disponíveis - Unidade'), 'servicos_disponiveis_unidade'),
-            3 => new Relatorio(_('Serviços codificados'), 'servicos_codificados', 'date-range'),
-            4 => new Relatorio(_('Atendimentos concluídos'), 'atendimentos_concluidos', 'date-range'),
-            5 => new Relatorio(_('Atendimentos em todos os status'), 'atendimentos_status', 'date-range'),
-            6 => new Relatorio(_('Tempos médios por Atendente'), 'tempo_medio_atendentes', 'date-range'),
-            7 => new Relatorio(_('Lotações'), 'lotacoes', 'unidade'),
-            8 => new Relatorio(_('Perfis'), 'perfis'),
-        ];
-    }
-
     /**
      *
      * @param Request $request
@@ -63,20 +38,14 @@ class DefaultController extends Controller
      */
     public function indexAction(Request $request)
     {
-        $unidade = $this->getUnidade();
-        $date = new DateTime();
-        
-        $endDate = $date->format(_('d/m/Y'));
-        $date->sub(new DateInterval('P1D'));
-        $startDate = $date->format(_('d/m/Y'));
+        $unidade    = $this->getUnidade();
+        $chartForm  = $this->createChartForm();
+        $reportForm = $this->createReportForm();
         
         return $this->render('@NovosgaReports/default/index.html.twig', [
-            'unidade' => $unidade,
-            'relatorios' => $this->relatorios,
-            'graficos' => $this->graficos,
-            'statusAtendimento' => AtendimentoService::situacoes(),
-            'startDate' => $startDate,
-            'endDate' => $endDate,
+            'unidade'    => $unidade,
+            'chartForm'  => $chartForm->createView(),
+            'reportForm' => $reportForm->createView(),
         ]);
     }
 
@@ -84,23 +53,28 @@ class DefaultController extends Controller
      *
      * @param Request $request
      *
-     * @Route("/chart/{id}", name="novosga_reports_chart")
+     * @Route("/chart", name="novosga_reports_chart")
      */
-    public function chartAction(Request $request, $id)
+    public function chartAction(Request $request)
     {
         $envelope = new Envelope();
         
-        $dataInicial = $request->get('inicial');
-        $dataFinal = $request->get('final').' 23:59:59';
-        $unidade = $this->getUnidade();
-
-        if (!isset($this->graficos[$id])) {
-            throw new Exception(_('Gráfico inválido'));
+        $form = $this->createChartForm();
+        $form->handleRequest($request);
+        
+        if (!$form->isSubmitted() || !$form->isValid()) {
+            throw new Exception('Formulário inválido');
         }
+        
+        $grafico     = $form->get('chart')->getData();
+        $dataInicial = $form->get('startDate')->getData();
+        $dataFinal   = $form->get('endDate')->getData();
+        $unidade     = $this->getUnidade();
+        
+        $dataInicial->setTime(0, 0, 0);
+        $dataFinal->setTime(23, 59, 59);
 
-        $grafico = $this->graficos[$id];
-
-        switch ($id) {
+        switch ($grafico->getId()) {
             case 1:
                 $grafico->setLegendas(AtendimentoService::situacoes());
                 $grafico->setDados($this->totalAtendimentosStatus($dataInicial, $dataFinal, $unidade));
@@ -127,52 +101,85 @@ class DefaultController extends Controller
      */
     public function reportAction(Request $request, UsuarioService $usuarioService)
     {
-        $id = (int) $request->get('relatorio');
-        $dataInicial = $request->get('inicial');
-        $dataFinal = $request->get('final');
-        $unidade = $this->getUnidade();
-        $params = [];
+        $form = $this->createReportForm();
+        $form->handleRequest($request);
         
-        if (isset($this->relatorios[$id])) {
-            $relatorio = $this->relatorios[$id];
-            $params['dataInicial'] = DateUtil::format($dataInicial, _('d/m/Y'));
-            $params['dataFinal'] = DateUtil::format($dataFinal, _('d/m/Y'));
-            
-            $dataFinal = $dataFinal.' 23:59:59';
-            switch ($id) {
-                case 1:
-                    $relatorio->setDados($this->servicosDisponiveisGlobal());
-                    break;
-                case 2:
-                    $relatorio->setDados($this->servicosDisponiveisUnidade($unidade));
-                    break;
-                case 3:
-                    $relatorio->setDados($this->servicosCodificados($dataInicial, $dataFinal, $unidade));
-                    break;
-                case 4:
-                    $relatorio->setDados($this->atendimentosConcluidos($dataInicial, $dataFinal, $unidade));
-                    break;
-                case 5:
-                    $relatorio->setDados($this->atendimentosStatus($dataInicial, $dataFinal, $unidade));
-                    break;
-                case 6:
-                    $relatorio->setDados($this->tempoMedioAtendentes($dataInicial, $dataFinal, $unidade));
-                    break;
-                case 7:
-                    $relatorio->setDados($this->lotacoes($usuarioService, $unidade));
-                    break;
-                case 8:
-                    $relatorio->setDados($this->perfis());
-                    break;
-            }
-            $params['relatorio'] = $relatorio;
-            $params['page'] = "NovosgaReportsBundle:relatorios:{$relatorio->getArquivo()}.html.twig";
+        if (!$form->isSubmitted() || !$form->isValid()) {
+            throw new Exception('Formulário inválido');
         }
         
-        return $this->render("NovosgaReports/default/relatorio.html.twig", $params);
+        $relatorio   = $form->get('report')->getData();
+        $dataInicial = $form->get('startDate')->getData();
+        $dataFinal   = $form->get('endDate')->getData();
+        $unidade     = $this->getUnidade();
+        
+        if (!$dataInicial) {
+            $dataInicial = new DateTime();
+        }
+        
+        if (!$dataFinal) {
+            $dataFinal = new DateTime();
+        }
+        
+        $dataInicial->setTime(0, 0, 0);
+        $dataFinal->setTime(23, 59, 59);
+        
+        switch ($relatorio->getId()) {
+            case 1:
+                $relatorio->setDados($this->servicosDisponiveisGlobal());
+                break;
+            case 2:
+                $relatorio->setDados($this->servicosDisponiveisUnidade($unidade));
+                break;
+            case 3:
+                $relatorio->setDados($this->servicosCodificados($dataInicial, $dataFinal, $unidade));
+                break;
+            case 4:
+                $relatorio->setDados($this->atendimentosConcluidos($dataInicial, $dataFinal, $unidade));
+                break;
+            case 5:
+                $relatorio->setDados($this->atendimentosStatus($dataInicial, $dataFinal, $unidade));
+                break;
+            case 6:
+                $relatorio->setDados($this->tempoMedioAtendentes($dataInicial, $dataFinal, $unidade));
+                break;
+            case 7:
+                $relatorio->setDados($this->lotacoes($usuarioService, $unidade));
+                break;
+            case 8:
+                $relatorio->setDados($this->perfis());
+                break;
+        }
+        
+        return $this->render("@NovosgaReports/default/relatorio.html.twig", [
+            'dataInicial' => $dataInicial->format('d/m/Y'),
+            'dataFinal'   => $dataFinal->format('d/m/Y'),
+            'relatorio'   => $relatorio,
+            'page'        => "@NovosgaReports/relatorios/{$relatorio->getArquivo()}.html.twig",
+        ]);
+    }
+    
+    private function createChartForm()
+    {
+        $form = $this->createForm(\Novosga\ReportsBundle\Form\ChartType::class);
+        
+        return $form;
+    }
+    
+    private function createReportForm()
+    {
+        $form = $this->createForm(\Novosga\ReportsBundle\Form\ReportType::class, null, [
+            'method' => 'get',
+            'action' => $this->generateUrl('novosga_reports_report'),
+            'attr' => [
+                'target' => '_blank'
+            ]
+        ]);
+        
+        return $form;
     }
 
-    private function totalAtendimentosStatus($dataInicial, $dataFinal, $unidade)
+    private function totalAtendimentosStatus(DateTime $dataInicial, DateTime $dataFinal, $unidade)
     {
         $dados = [];
         $status = AtendimentoService::situacoes();
@@ -191,10 +198,10 @@ class DefaultController extends Controller
                         e.status = :status
                 ")
                 ->setParameters([
-                    'inicio' => $dataInicial
+                    'inicio'  => $dataInicial,
+                    'fim'     => $dataFinal,
+                    'unidade' => $unidade->getId()
                 ]);
-                $query->setParameter('fim', $dataFinal);
-                $query->setParameter('unidade', $unidade->getId());
         
         foreach ($status as $k => $v) {
             $query->setParameter('status', $k);
@@ -205,7 +212,7 @@ class DefaultController extends Controller
         return $dados;
     }
 
-    private function totalAtendimentosServico($dataInicial, $dataFinal, $unidade)
+    private function totalAtendimentosServico(DateTime $dataInicial, DateTime $dataFinal, $unidade)
     {
         $dados = [];
         $rs = $this
@@ -229,8 +236,8 @@ class DefaultController extends Controller
                 ")
                 ->setParameters([
                     'status' => AtendimentoService::ATENDIMENTO_ENCERRADO,
-                    'inicio' => $dataInicial,
-                    'fim' => $dataFinal,
+                    'inicio'  => $dataInicial,
+                    'fim'     => $dataFinal,
                     'unidade' => $unidade->getId()
                 ])
                 ->getResult();
@@ -242,7 +249,7 @@ class DefaultController extends Controller
         return $dados;
     }
 
-    private function tempoMedioAtendimentos($dataInicial, $dataFinal, $unidade)
+    private function tempoMedioAtendimentos(DateTime $dataInicial, DateTime $dataFinal, $unidade)
     {
         $dados = [];
         $tempos = [
@@ -268,23 +275,17 @@ class DefaultController extends Controller
         $query = $this
                 ->getDoctrine()
                 ->getManager()
-                ->createQuery($dql);
-        $query->setParameter('inicio', $dataInicial);
-        $query->setParameter('fim', $dataFinal);
-        $query->setParameter('unidade', $unidade->getId());
+                ->createQuery($dql)
+                ->setParameters([
+                    'inicio'  => $dataInicial,
+                    'fim'     => $dataFinal,
+                    'unidade' => $unidade->getId(),
+                ]);
             
         $rs = $query->getResult();
         foreach ($rs as $r) {
-            try {
-                // se der erro tentando converter a data do banco para segundos, assume que ja esta em segundos
-                // Isso é necessário para manter a compatibilidade entre os bancos
-                foreach ($tempos as $k => $v) {
-                    $dados[$v] = DateUtil::timeToSec($r[$k]);
-                }
-            } catch (\Exception $e) {
-                foreach ($tempos as $k => $v) {
-                    $dados[$v] = (int) $r[$k];
-                }
+            foreach ($tempos as $k => $v) {
+                $dados[$v] = (int) $r[$k];
             }
         }
 
@@ -347,7 +348,7 @@ class DefaultController extends Controller
         return $dados;
     }
 
-    private function servicosCodificados($dataInicial, $dataFinal, $unidade)
+    private function servicosCodificados(DateTime $dataInicial, DateTime $dataFinal, $unidade)
     {
         $rs = $this
                 ->getDoctrine()
@@ -371,8 +372,8 @@ class DefaultController extends Controller
                 ")
                 ->setParameters([
                     'dataInicial' => $dataInicial,
-                    'dataFinal' => $dataFinal,
-                    'unidade' => $unidade,
+                    'dataFinal'   => $dataFinal,
+                    'unidade'     => $unidade,
                 ])
                 ->setMaxResults(self::MAX_RESULTS)
                 ->getResult();
@@ -385,7 +386,7 @@ class DefaultController extends Controller
         return $dados;
     }
 
-    private function atendimentosConcluidos($dataInicial, $dataFinal, $unidade)
+    private function atendimentosConcluidos(DateTime $dataInicial, DateTime $dataFinal, $unidade)
     {
         $rs = $this
                 ->getDoctrine()
@@ -404,10 +405,10 @@ class DefaultController extends Controller
                         e.dataChegada
                 ")
                 ->setParameters([
-                    'status' => AtendimentoService::ATENDIMENTO_ENCERRADO,
+                    'status'      => AtendimentoService::ATENDIMENTO_ENCERRADO,
                     'dataInicial' => $dataInicial,
-                    'dataFinal' => $dataFinal,
-                    'unidade' => $unidade
+                    'dataFinal'   => $dataFinal,
+                    'unidade'     => $unidade
                 ])
                 ->setMaxResults(self::MAX_RESULTS)
                 ->getResult();
@@ -420,7 +421,7 @@ class DefaultController extends Controller
         return $dados;
     }
 
-    private function atendimentosStatus($dataInicial, $dataFinal, $unidade)
+    private function atendimentosStatus(DateTime $dataInicial, DateTime $dataFinal, $unidade)
     {
         $rs = $this
                 ->getDoctrine()
@@ -439,8 +440,8 @@ class DefaultController extends Controller
                 ")
                 ->setParameters([
                     'dataInicial' => $dataInicial,
-                    'dataFinal' => $dataFinal,
-                    'unidade' => $unidade
+                    'dataFinal'   => $dataFinal,
+                    'unidade'     => $unidade
                 ])
                 ->setMaxResults(self::MAX_RESULTS)
                 ->getResult();
@@ -453,7 +454,7 @@ class DefaultController extends Controller
         return $dados;
     }
 
-    private function tempoMedioAtendentes($dataInicial, $dataFinal, $unidade)
+    private function tempoMedioAtendentes(DateTime $dataInicial, DateTime $dataFinal, $unidade)
     {
         $dados = [];
         $rs = $this

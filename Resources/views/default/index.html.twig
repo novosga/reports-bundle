@@ -29,66 +29,44 @@
     </ul>
     <div id="tabs" class="tab-content">
         <div id="tab-graficos" class="tab-pane active">
-            <form id="chart-form" action="#" onsubmit="return false">
+            {{ form_start(chartForm, { attr: { 'onsubmit': 'App.Estatisticas.Grafico.gerar(this); return false' } }) }}
                 <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group required">
-                            <label for="chart-id">{% trans %}Gráfico{% endtrans %}</label>
-                            <select id="chart-id" name="grafico" class="form-control" required>
-                                <option value="">{% trans %}Selecione{% endtrans %}</option>
-                                {% for k, v in graficos %}
-                                    <option value="{{ k }}" data-opcoes="{{ v.opcoes }}">{{ v.titulo }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
+                    <div class="col-lg-3 col-md-4">
+                        
+                        {{ form_row(chartForm.chart, { label: 'Gráfico' }) }}
+
+                        {{ form_row(chartForm.startDate, { label: 'Data inicial', attr: { class: 'datepicker' } }) }}
+
+                        {{ form_row(chartForm.endDate, { label: 'Data final', attr: { class: 'datepicker' } }) }}
+                        
+                        <button type="submit" class="btn btn-primary">
+                            {% trans %}Gerar gráfico{% endtrans %}
+                        </button>
                     </div>
-                    <div class="col-md-4">
-                        <div class="form-group required">
-                            <label for="chart-dataInicial">{% trans %}Data inicial{% endtrans %}</label>
-                            <input id="chart-dataInicial" name="inicial" type="text" class="form-control datepicker" value="{{ startDate }}" required>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group required">
-                            <label for="chart-dataFinal">{% trans %}Data final{% endtrans %}</label>
-                            <input id="chart-dataFinal" name="final" type="text" class="form-control datepicker" value="{{ endDate }}" required>
+                    <div class="col-lg-8 col-md-8 ml-auto">
+                        <div id="chart-result">
                         </div>
                     </div>
                 </div>
-                <div class="form-group">
-                    <button type="submit" class="btn btn-primary" onclick="App.Estatisticas.Grafico.gerar()">
-                        {% trans %}Gerar gráfico{% endtrans %}
-                    </button>
-                </div>
-                <div id="chart-result"></div>
-            </form>
+            {{ form_end(chartForm) }}
         </div>
         <div id="tab-relatorios" class="tab-pane">
-            <form id="report-form" action="{{ path('novosga_reports_report') }}" method="get" target="_blank" onsubmit="return App.Estatisticas.Relatorio.gerar()">
-                <input type="hidden" id="report-hidden-inicial" name="inicial">
-                <input type="hidden" id="report-hidden-final" name="final">
+            {{ form_start(reportForm, { attr: { 'onsubmit': '' } }) }}
+            
+                {{ form_row(reportForm.report, { label: 'Relatório', attr: { 'onchange': 'App.Estatisticas.options(\'#tab-relatorios\')' } }) }}
+
+                <div class="option date date-range" style="display:none">
+                    {{ form_row(reportForm.startDate, { label: 'Data inicial', attr: { class: 'datepicker' } }) }}
+                </div>
+
+                <div class="option date date-range" style="display:none">
+                    {{ form_row(reportForm.endDate, { label: 'Data final', attr: { class: 'datepicker' } }) }}
+                </div>
                 
-                <div class="form-group required">
-                    <label for="report-id">{% trans %}Relatório{% endtrans %}</label>
-                    <select id="report-id" name="relatorio" class="form-control" required>
-                        <option value="">{% trans %}Selecione{% endtrans %}</option>
-                        {% for k,v in relatorios %}
-                            <option value="{{ k }}" data-opcoes="{{ v.opcoes }}">{{ v.titulo }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="form-group required option date date-range" style="display:none">
-                    <label for="report-dataInicial">{% trans %}Data inicial{% endtrans %}</label>
-                    <input id="report-dataInicial" type="text" class="form-control datepicker" value="{{ startDate }}">
-                </div>
-                <div class="form-group required option date-range" style="display:none">
-                    <label for="report-dataFinal">{% trans %}Data final{% endtrans %}</label>
-                    <input id="report-dataFinal" type="text" class="form-control datepicker" value="{{ endDate }}">
-                </div>
-                <div class="form-group">
-                    <button type="submit" class="btn btn-primary">{% trans %}Gerar relatório{% endtrans %}</button>
-                </div>
-            </form>
+                <button type="submit" class="btn btn-primary">
+                    {% trans %}Gerar relatório{% endtrans %}
+                </button>
+            {{ form_end(chartForm) }}
         </div>
     </div>
 {% endblock %}
@@ -96,25 +74,16 @@
 {% block stylesheets %}
     {{ parent() }}
     <link rel="stylesheet" type="text/css" href="{{ asset('bundles/novosgareports/css/style.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/novosgareports/css/datepicker3.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/novosgareports/css/bootstrap-datepicker.standalone.min.css') }}">
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
-    <script type="text/javascript" src="{{ asset('bundles/novosgareports/js/highcharts.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('bundles/novosgareports/js/highcharts.exporting.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/novosgareports/js/Chart.bundle.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('bundles/novosgareports/js/bootstrap-datepicker.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('bundles/novosgareports/js/bootstrap-datepicker.pt-BR.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('bundles/novosgareports/js/script.js') }}"></script>
     <script type="text/javascript">
-        // tab graficos
-        $("#chart-id").on('change', function() {
-            App.Estatisticas.Grafico.change($(this));
-        });
-        // tab relatorios
-        $("#report-id").on('change', function() {
-            App.Estatisticas.Relatorio.change($(this));
-        });
         $(".datepicker" ).datepicker({
             language: 'pt-BR',
             format: '{% trans %}dd/mm/yyyy{% endtrans %}'

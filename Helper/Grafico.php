@@ -20,9 +20,9 @@ class Grafico extends Relatorio
 {
     private $legendas = [];
 
-    public function __construct($titulo, $tipo, $opcoes = '')
+    public function __construct($id, $titulo, $tipo, $opcoes = '')
     {
-        parent::__construct($titulo, $tipo, $opcoes);
+        parent::__construct($id, $titulo, $tipo, $opcoes);
     }
 
     public function getLegendas()
@@ -33,11 +33,14 @@ class Grafico extends Relatorio
     public function setLegendas($legendas)
     {
         $this->legendas = $legendas;
+        
+        return $this;
     }
 
     public function jsonSerialize()
     {
         return [
+            'id'       => $this->id,
             'tipo'     => $this->arquivo,
             'titulo'   => $this->titulo,
             'dados'    => $this->dados,

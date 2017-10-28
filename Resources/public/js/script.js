@@ -24,138 +24,97 @@ App.Estatisticas = {
     
     Grafico: {
         
-        gerar: function () {
-            var id = $('#chart-id').val();
-            if (id > 0) {
-                var dtIni = $('#chart-dataInicial').val();
-                var dtFim = $('#chart-dataFinal').val();
-                App.ajax({
-                    url: App.url('/novosga.reports/chart/') + id,
-                    data: {
-                        grafico: id,
-                        inicial: App.Estatisticas.dateToSql(dtIni),
-                        final: App.Estatisticas.dateToSql(dtFim)
-                    },
-                    success: function (response) {
-                        var prop = {
-                            id: 'chart-result',
-                            dados: response.data.dados,
-                            legendas: response.data.legendas,
-                            titulo: response.data.titulo + ' (' + dtIni + ' - ' + dtFim + ')'
-                        };
-                        switch (response.data.tipo) {
-                            case 'pie':
-                                App.Estatisticas.Grafico.pie(prop);
-                            break;
-                            case 'bar':
-                                App.Estatisticas.Grafico.bar(prop);
-                            break;
-                        }
-                        $(window).scrollTop($('#chart-result').position().top);
-                    }
-                });
-            }
-        },
+        backgroundColors: [
+            'rgba(255, 99, 132, 0.2)',
+            'rgba(54, 162, 235, 0.2)',
+            'rgba(255, 206, 86, 0.2)',
+            'rgba(75, 192, 192, 0.2)',
+            'rgba(153, 102, 255, 0.2)',
+            'rgba(255, 159, 64, 0.2)'
+        ],
         
-        change: function (elem) {
-            if (elem.val() > 0) {
-                // desabilitando as opções
-                App.Estatisticas.options('#tab-graficos');
-            }
+        gerar: function (form) {
+            $.ajax({
+                type: 'POST',
+                url: App.url('/novosga.reports/chart'),
+                data: $(form).serialize(),
+                success: function (response) {
+                    $('#chart-result')
+                        .html('')
+                        .append('<canvas id="chart-result-canvas" width="400"></canvas>');
+
+                    var prop = {
+                        id: 'chart-result-canvas',
+                        dados: response.data.dados,
+                        legendas: response.data.legendas,
+                        titulo: response.data.titulo
+                    };
+                    switch (response.data.tipo) {
+                        case 'pie':
+                            App.Estatisticas.Grafico.pie(prop);
+                        break;
+                        case 'bar':
+                            App.Estatisticas.Grafico.bar(prop);
+                        break;
+                    }
+                }
+            });
         },
         
         pie: function (prop) {
-            var series = [];
-            for (var j in prop.dados) {
-                var legenda = prop.legendas && prop.legendas[j] ? prop.legendas[j] : j;
-                series.push([legenda, parseInt(prop.dados[j])]);
+            var labels = [],
+                data   = [],
+                colors = [],
+                ctx    = document.getElementById(prop.id);
+            
+            for (var i in prop.dados) {
+                var legenda = prop.legendas && prop.legendas[i] ? prop.legendas[i] : i;
+                
+                colors.push(this.backgroundColors[data.length % this.backgroundColors.length]);
+                data.push(parseInt(prop.dados[i]));
+                labels.push(legenda);
             }
-            new Highcharts.Chart({
-                chart: {
-                    renderTo: prop.id,
-                    type: 'pie'
-                },
-                title: {
-                    text: prop.titulo
-                },
-                plotOptions: {
-                    pie: {
-                        showInLegend: true,
-                        dataLabels: {
-                            enabled: true,
-                            formatter: function () {
-                                return '<b>' + this.point.name + '</b>: ' + Math.round(this.point.total * this.point.percentage / 100);
-                            }
-                        }
-                    }
-                },
-                series: [{
-                    type: 'pie',
-                    name: prop.titulo,
-                    data: series
-                }],
-                exporting: {
-                    enabled: true,
-                    sourceWidth: 1024,
-                    sourceHeight: 800
+            
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: data,
+                        backgroundColor: colors,
+                    }],
+                    labels: labels,
                 }
             });
         },
         
         bar: function (prop) {
-            var series = [];
-            var categories = [];
-            for (var j in prop.dados) {
-                var legenda = prop.legendas && prop.legendas[j] ? prop.legendas[j] : j;
-                series.push({
-                    name: legenda,
-                    data: [parseInt(prop.dados[j])]
-                });
-                categories.push(legenda);
+            var labels = [],
+                data   = [],
+                colors = [],
+                ctx    = document.getElementById(prop.id);
+            
+            for (var i in prop.dados) {
+                var legenda = prop.legendas && prop.legendas[i] ? prop.legendas[i] : i;
+                
+                colors.push(this.backgroundColors[data.length % this.backgroundColors.length]);
+                data.push(parseInt(prop.dados[i]));
+                labels.push(legenda);
             }
-            new Highcharts.Chart({
-                chart: {
-                    renderTo: prop.id,
-                    type: 'bar'
-                },
-                title: {
-                    text: prop.titulo
-                },
-                xAxis: {
-                    categories: categories,
-                    title: {
-                        text: null
-                    }
-                },
-                // TODO: informar no response o tipo de tooltip (abaixo esta fixo formatando tempo)
-                tooltip: {
-                    formatter: function () {
-                        return this.series.name + ': ' + App.Estatisticas.secToTime(this.y);
-                    }
-                },
-                series: series
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    datasets: [{
+                        label: prop.titulo,
+                        data: data,
+                        backgroundColor: colors,
+                    }],
+                    labels: labels,
+                }
             });
         }
-        
     },
     
-    Relatorio: {
-        
-        gerar: function () {
-            $('#report-hidden-inicial').val(App.Estatisticas.dateToSql($('#report-dataInicial').val()));
-            $('#report-hidden-final').val(App.Estatisticas.dateToSql($('#report-dataFinal').val()));
-            return true;
-        },
-        
-        change: function (elem) {
-            if (elem.val() > 0) {
-                // desabilitando as opções
-                App.Estatisticas.options('#tab-relatorios');
-            }
-        }
-        
-    },
-            
     secToTime: function (seconds) {
         var hours = Math.floor(seconds / 3600);
         var mins = Math.floor((seconds - (hours * 3600)) / 60);
