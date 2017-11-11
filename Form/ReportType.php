@@ -33,7 +33,7 @@ class ReportType extends AbstractType
                 'choices' => [
                     new Relatorio(1, _('Serviços Disponíveis - Global'), 'servicos_disponiveis_global'),
                     new Relatorio(2, _('Serviços Disponíveis - Unidade'), 'servicos_disponiveis_unidade'),
-                    new Relatorio(3, _('Serviços executados'), 'servicos_codificados', 'date-range'),
+                    new Relatorio(3, _('Serviços executados'), 'servicos_realizados', 'date-range'),
                     new Relatorio(4, _('Atendimentos concluídos'), 'atendimentos_concluidos', 'date-range'),
                     new Relatorio(5, _('Atendimentos em todos os status'), 'atendimentos_status', 'date-range'),
                     new Relatorio(6, _('Tempos médios por Atendente'), 'tempo_medio_atendentes', 'date-range'),
