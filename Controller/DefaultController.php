@@ -132,7 +132,7 @@ class DefaultController extends Controller
                 $relatorio->setDados($this->servicosDisponiveisUnidade($unidade));
                 break;
             case 3:
-                $relatorio->setDados($this->servicosCodificados($dataInicial, $dataFinal, $unidade));
+                $relatorio->setDados($this->servicosRealizados($dataInicial, $dataFinal, $unidade));
                 break;
             case 4:
                 $relatorio->setDados($this->atendimentosConcluidos($dataInicial, $dataFinal, $unidade));
@@ -348,7 +348,7 @@ class DefaultController extends Controller
         return $dados;
     }
 
-    private function servicosCodificados(DateTime $dataInicial, DateTime $dataFinal, $unidade)
+    private function servicosRealizados(DateTime $dataInicial, DateTime $dataFinal, $unidade)
     {
         $rs = $this
                 ->getDoctrine()
