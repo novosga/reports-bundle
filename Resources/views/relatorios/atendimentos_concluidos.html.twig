@@ -21,9 +21,9 @@
             <tr>
                 <td rowspan="2" class="vam tac">{{ a.senha.sigla }}{{ a.senha.numero }}</td>
                 <td>{{ a.dataChegada|date('d/m/Y') }}</td>
-                <td>{{ a.dataChamada|date('H:i:s') }}</td>
-                <td>{{ a.dataInicio|date('H:i:s') }}</td>
-                <td>{{ a.dataFim|date('H:i:s') }}</td>
+                <td>{{ a.dataChamada is empty ? "" : a.dataChamada|date('H:i:s') }}</td>
+                <td>{{ a.dataInicio is empty ? "" : a.dataInicio|date('H:i:s') }}</td>
+                <td>{{ a.dataFim is empty ? "" : a.dataFim|date('H:i:s') }}</td>
                 <td>{{ a.tempoAtendimento|date('%H:%I:%S') }}</td>
                 <td>{{ a.tempoPermanencia|date('%H:%I:%S') }}</td>
                 <td>{{ a.servico.nome }}</td>
