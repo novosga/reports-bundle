@@ -1,5 +1,7 @@
 {% extends "base.html.twig" %}
 
+{% trans_default_domain 'NovosgaReportsBundle' %}
+
 {% block title -%}
-    {% trans %}Relatórios{% endtrans %}
+    {{ 'title'|trans }}
 {%- endblock %} 

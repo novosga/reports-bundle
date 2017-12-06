@@ -1,13 +1,15 @@
 {% extends "@NovosgaReports/base.html.twig" %}
 
+{% trans_default_domain 'NovosgaReportsBundle' %}
+
 {% block body %}
     <div class="row">
         <div class="col-sm-12">
             <h1>
                 <i class="fa fa-desktop" aria-hidden="true"></i>
-                {% trans %}Relatórios{% endtrans %}
+                {{ 'title'|trans }}
                 <small>
-                    {% trans %}Relatórios e gráficos do sistema.{% endtrans %}
+                    {{ 'subtitle'|trans }}
                 </small>
             </h1>
         </div>
