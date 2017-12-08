@@ -55,7 +55,7 @@ class DefaultController extends Controller
      *
      * @Route("/chart", name="novosga_reports_chart")
      */
-    public function chartAction(Request $request)
+    public function chartAction(Request $request, AtendimentoService $atendimentoService)
     {
         $envelope = new Envelope();
         
@@ -76,8 +76,9 @@ class DefaultController extends Controller
 
         switch ($grafico->getId()) {
             case 1:
-                $grafico->setLegendas(AtendimentoService::situacoes());
-                $grafico->setDados($this->totalAtendimentosStatus($dataInicial, $dataFinal, $unidade));
+                $situacoes = $atendimentoService->situacoes();
+                $grafico->setLegendas($situacoes);
+                $grafico->setDados($this->totalAtendimentosStatus($situacoes, $dataInicial, $dataFinal, $unidade));
                 break;
             case 2:
                 $grafico->setDados($this->totalAtendimentosServico($dataInicial, $dataFinal, $unidade));
@@ -179,10 +180,9 @@ class DefaultController extends Controller
         return $form;
     }
 
-    private function totalAtendimentosStatus(DateTime $dataInicial, DateTime $dataFinal, $unidade)
+    private function totalAtendimentosStatus($situacoes, DateTime $dataInicial, DateTime $dataFinal, $unidade)
     {
         $dados = [];
-        $status = AtendimentoService::situacoes();
         $query = $this
                 ->getDoctrine()
                 ->getManager()
@@ -203,7 +203,7 @@ class DefaultController extends Controller
                     'unidade' => $unidade->getId()
                 ]);
         
-        foreach ($status as $k => $v) {
+        foreach ($situacoes as $k => $v) {
             $query->setParameter('status', $k);
             $rs = $query->getSingleResult();
             $dados[$k] = (int) $rs['total'];
