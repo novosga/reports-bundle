@@ -256,8 +256,12 @@ class DefaultController extends Controller
         return $dados;
     }
 
-    private function tempoMedioAtendimentos(TranslatorInterface $translator, DateTime $dataInicial, DateTime $dataFinal, $unidade)
-    {
+    private function tempoMedioAtendimentos(
+        TranslatorInterface $translator,
+        DateTime $dataInicial,
+        DateTime $dataFinal,
+        $unidade
+    ) {
         $dados = [];
         $tempos = [
             'espera'       => $translator->trans('label.wait_time', [], self::DOMAIN),
