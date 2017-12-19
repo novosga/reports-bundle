@@ -14,6 +14,22 @@
         <source>subtitle</source>
         <target>Relatórios e gráficos do sistema.</target>
       </trans-unit>
+      <trans-unit id="3">
+        <source>label.wait_time</source>
+        <target>Tempo de Espera</target>
+      </trans-unit>
+      <trans-unit id="4">
+        <source>label.dislocation_time</source>
+        <target>Tempo de Espera</target>
+      </trans-unit>
+      <trans-unit id="5">
+        <source>label.servicing_time</source>
+        <target>Tempo de Atendimento</target>
+      </trans-unit>
+      <trans-unit id="6">
+        <source>label.total_time</source>
+        <target>Tempo Total</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
