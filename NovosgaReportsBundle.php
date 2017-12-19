@@ -22,7 +22,7 @@ class NovosgaReportsBundle extends BaseModule
 
     public function getDisplayName()
     {
-        return 'Relatórios';
+        return 'module.name';
     }
 
     public function getHomeRoute()
