@@ -1,5 +1,5 @@
 <?xml version="1.0" ?><xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file datatype="plaintext" original="messages.pt_BR.xlf" source-language="pt-BR" target-language="es">
+  <file datatype="plaintext" original="messages.pt_BR.xlf" source-language="pt-BR" target-language="es-AR">
     <body>
       <trans-unit id="0">
         <source>module.name</source>
@@ -13,6 +13,7 @@
       </trans-unit>
       <trans-unit id="2">
         <source>subtitle</source>
+        <target>Informes y gráficos del sistema.</target>
         
       </trans-unit>
       <trans-unit id="3">

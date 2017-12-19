@@ -15,6 +15,26 @@
         <source>subtitle</source>
         
       </trans-unit>
+      <trans-unit id="3">
+        <source>label.wait_time</source>
+        <target>Waiting time</target>
+        
+      </trans-unit>
+      <trans-unit id="4">
+        <source>label.dislocation_time</source>
+        <target>Waiting time</target>
+        
+      </trans-unit>
+      <trans-unit id="5">
+        <source>label.servicing_time</source>
+        <target>Servicing's time</target>
+        
+      </trans-unit>
+      <trans-unit id="6">
+        <source>label.total_time</source>
+        <target>Total time</target>
+        
+      </trans-unit>
     </body>
   </file>
 </xliff>
