@@ -13,3 +13,6 @@ services:
     Novosga\ReportsBundle\Controller\:
         resource: '../../Controller'
         tags: ['controller.service_arguments']
+        
+    Novosga\ReportsBundle\Form\:
+        resource: '../../Form'

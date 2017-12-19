@@ -11,50 +11,70 @@
 
 namespace Novosga\ReportsBundle\Form;
 
+use DateTime;
+use Novosga\ReportsBundle\Controller\DefaultController;
 use Novosga\ReportsBundle\Helper\Grafico;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Component\Validator\Constraints\NotNull;
 
 class ChartType extends AbstractType
 {
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+    
+    public function __construct(TranslatorInterface $translator)
+    {
+        $this->translator = $translator;
+    }
+    
     /**
      * @param FormBuilderInterface $builder
      * @param array $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $today     = new \DateTime('today');
-        $yesterday = new \DateTime('yesterday');
+        $today     = new DateTime('today');
+        $yesterday = new DateTime('yesterday');
+        
+        $chart1 = $this->translator->trans('chart.servicing_by_status', [], DefaultController::DOMAIN);
+        $chart2 = $this->translator->trans('chart.servicing_by_service', [], DefaultController::DOMAIN);
+        $chart3 = $this->translator->trans('chart.avg_servicing_time', [], DefaultController::DOMAIN);
         
         $builder
-            ->add('chart', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+            ->add('chart', ChoiceType::class, [
                 'placeholder' => 'Selecione',
                 'choices' => [
-                    new Grafico(1, _('Atendimentos por status'), 'pie', 'date-range'),
-                    new Grafico(2, _('Atendimentos por serviço'), 'pie', 'date-range'),
-                    new Grafico(3, _('Tempo médio do atendimento'), 'bar', 'date-range'),
+                    new Grafico(1, $chart1, 'pie', 'date-range'),
+                    new Grafico(2, $chart2, 'pie', 'date-range'),
+                    new Grafico(3, $chart3, 'bar', 'date-range'),
                 ],
                 'choice_label' => function (Grafico $item) {
                     return $item->getTitulo();
                 },
                 'constraints' => [
-                    new \Symfony\Component\Validator\Constraints\NotNull(),
+                    new NotNull(),
                 ]
             ])
-            ->add('startDate', \Symfony\Component\Form\Extension\Core\Type\DateType::class, [
+            ->add('startDate', DateType::class, [
                 'widget' => 'single_text',
                 'format' => 'dd/MM/yyyy',
                 'constraints' => [
-                    new \Symfony\Component\Validator\Constraints\NotNull(),
+                    new NotNull(),
                 ],
                 'data' => $yesterday,
             ])
-            ->add('endDate', \Symfony\Component\Form\Extension\Core\Type\DateType::class, [
+            ->add('endDate', DateType::class, [
                 'widget' => 'single_text',
                 'format' => 'dd/MM/yyyy',
                 'constraints' => [
-                    new \Symfony\Component\Validator\Constraints\NotNull(),
+                    new NotNull(),
                 ],
                 'data' => $today,
             ])

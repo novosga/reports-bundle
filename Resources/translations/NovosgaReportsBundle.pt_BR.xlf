@@ -30,6 +30,50 @@
         <source>label.total_time</source>
         <target>Tempo Total</target>
       </trans-unit>
+      <trans-unit id="7">
+        <source>chart.servicing_by_status</source>
+        <target>Atendimentos por status</target>
+      </trans-unit>
+      <trans-unit id="8">
+        <source>chart.servicing_by_service</source>
+        <target>Atendimentos por serviço</target>
+      </trans-unit>
+      <trans-unit id="9">
+        <source>chart.avg_servicing_time</source>
+        <target>Tempo médio do atendimento</target>
+      </trans-unit>
+      <trans-unit id="10">
+        <source>report.services_available_global</source>
+        <target>Serviços Disponíveis - Global</target>
+      </trans-unit>
+      <trans-unit id="11">
+        <source>report.services_available_unity</source>
+        <target>Serviços Disponíveis - Unidade</target>
+      </trans-unit>
+      <trans-unit id="12">
+        <source>report.services_performed</source>
+        <target>Serviços executados</target>
+      </trans-unit>
+      <trans-unit id="13">
+        <source>report.finished_servicing</source>
+        <target>Atendimentos concluídos</target>
+      </trans-unit>
+      <trans-unit id="14">
+        <source>report.servicing_all_status</source>
+        <target>Atendimentos em todos os status</target>
+      </trans-unit>
+      <trans-unit id="15">
+        <source>report.avg_time_servicing</source>
+        <target>Tempos médios por Atendente</target>
+      </trans-unit>
+      <trans-unit id="16">
+        <source>report.lotations</source>
+        <target>Lotações</target>
+      </trans-unit>
+      <trans-unit id="17">
+        <source>report.roles</source>
+        <target>Perfis</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

@@ -35,6 +35,59 @@
         <target>Tiempo Total</target>
         
       </trans-unit>
+      <trans-unit id="7">
+        <source>chart.servicing_by_status</source>
+        <target>Atención por status</target>
+        
+      </trans-unit>
+      <trans-unit id="8">
+        <source>chart.servicing_by_service</source>
+        <target>Atención por servicio</target>
+        
+      </trans-unit>
+      <trans-unit id="9">
+        <source>chart.avg_servicing_time</source>
+        <target>Tiempo medio de atención</target>
+        
+      </trans-unit>
+      <trans-unit id="10">
+        <source>report.services_available_global</source>
+        <target>Servicios Disponibles - Global</target>
+        
+      </trans-unit>
+      <trans-unit id="11">
+        <source>report.services_available_unity</source>
+        <target>Servicios Disponibles - Unidad</target>
+        
+      </trans-unit>
+      <trans-unit id="12">
+        <source>report.services_performed</source>
+        
+      </trans-unit>
+      <trans-unit id="13">
+        <source>report.finished_servicing</source>
+        <target>Atenciones concluidas</target>
+        
+      </trans-unit>
+      <trans-unit id="14">
+        <source>report.servicing_all_status</source>
+        <target>Atenciones en todos los status</target>
+        
+      </trans-unit>
+      <trans-unit id="15">
+        <source>report.avg_time_servicing</source>
+        <target>Tiempos medios por operador</target>
+        
+      </trans-unit>
+      <trans-unit id="16">
+        <source>report.lotations</source>
+        <target>Dotaciones</target>
+        
+      </trans-unit>
+      <trans-unit id="17">
+        <source>report.roles</source>
+        
+      </trans-unit>
     </body>
   </file>
 </xliff>
