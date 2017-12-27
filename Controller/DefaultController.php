@@ -502,29 +502,8 @@ class DefaultController extends Controller
         
         $dados = [
             'unidade' => $unidade->getNome(),
-            'atendentes' => []
+            'atendentes' => $rs,
         ];
-        
-        foreach ($rs as $r) {
-            $d = [
-                'atendente' => $r['atendente'],
-                'total'     => $r['total'],
-            ];
-            try {
-                // se der erro tentando converter a data do banco para segundos, assume que ja esta em segundos
-                // Isso é necessário para manter a compatibilidade entre os bancos
-                $d['espera'] = DateUtil::timeToSec($r['espera']);
-                $d['deslocamento'] = DateUtil::timeToSec($r['deslocamento']);
-                $d['atendimento'] = DateUtil::timeToSec($r['atendimento']);
-                $d['tempoTotal'] = DateUtil::timeToSec($r['tempoTotal']);
-            } catch (\Exception $e) {
-                $d['espera'] = $r['espera'];
-                $d['deslocamento'] = $r['deslocamento'];
-                $d['atendimento'] = $r['atendimento'];
-                $d['tempoTotal'] = $r['tempoTotal'];
-            }
-            $dados['atendentes'][] = $d;
-        }
 
         return $dados;
     }
