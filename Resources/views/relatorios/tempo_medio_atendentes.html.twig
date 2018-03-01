@@ -2,6 +2,14 @@
     <h2>{{ relatorio.dados.unidade }}</h2>
     <p>{% trans with {'%dataInicial%': dataInicial, '%dataFinal%': dataFinal} from "app" %}Período de %dataInicial% a %dataFinal%{% endtrans %}</p>
 </div>
+
+{% set total = 0 %}
+{% set espera = 0 %}
+{% set deslocamento = 0 %}
+{% set deslocamento = 0 %}
+{% set atendimento = 0 %}
+{% set tempoTotal = 0 %}
+
 <table class="table table-bordered table-striped">
     <thead class="thead-light">
         <tr>
@@ -15,16 +23,32 @@
     </thead>
     <tbody>
         {% for dado in relatorio.dados.atendentes %}
+            {% set total = total + dado.total %}
+            {% set espera = espera + dado.espera %}
+            {% set deslocamento = deslocamento + dado.deslocamento %}
+            {% set deslocamento = deslocamento + dado.deslocamento %}
+            {% set atendimento = atendimento + dado.atendimento %}
+            {% set tempoTotal = tempoTotal + dado.tempoTotal %}
             <tr>
                 <td class="strong">{{ dado.atendente }}</td>
                 <td>{{ dado.total }}</td>
-                <td>{{ dado.espera }}</td>
-                <td>{{ dado.deslocamento }}</td>
-                <td>{{ dado.atendimento }}</td>
-                <td>{{ dado.tempoTotal }}</td>
+                <td>{{ dado.espera|secToDate|date('H:i:s') }}</td>
+                <td>{{ dado.deslocamento|secToDate|date('H:i:s') }}</td>
+                <td>{{ dado.atendimento|secToDate|date('H:i:s') }}</td>
+                <td>{{ dado.tempoTotal|secToDate|date('H:i:s') }}</td>
             </tr>
         {% endfor %}
     </tbody>
+    <tfoot>
+        <tr>
+            <td class="strong">&nbsp;</td>
+            <td>{{ total }}</td>
+            <td>{{ espera|secToDate|date('H:i:s') }}</td>
+            <td>{{ deslocamento|secToDate|date('H:i:s') }}</td>
+            <td>{{ atendimento|secToDate|date('H:i:s') }}</td>
+            <td>{{ tempoTotal|secToDate|date('H:i:s') }}</td>
+        </tr>
+    </tfoot>
 </table>
 <div>
     <h4>{% trans %}Legenda{% endtrans %}</h4>

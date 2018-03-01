@@ -74,6 +74,10 @@
         <source>report.roles</source>
         <target>Perfis</target>
       </trans-unit>
+      <trans-unit id="18">
+        <source>label.ticket</source>
+        <target>Senha</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

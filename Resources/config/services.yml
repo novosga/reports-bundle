@@ -16,3 +16,8 @@ services:
         
     Novosga\ReportsBundle\Form\:
         resource: '../../Form'
+        
+    Novosga\ReportsBundle\Twig\:
+        resource: '../../Twig'
+        tags:
+            - twig.extension
