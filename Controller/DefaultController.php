@@ -507,9 +507,9 @@ class DefaultController extends Controller
             ->getManager()
             ->createQueryBuilder()
             ->select([
-                'e', 
-                'usu', 
-                'uni', 
+                'e',
+                'usu',
+                'uni',
                 'c',
             ])
             ->from(Lotacao::class, 'e')
