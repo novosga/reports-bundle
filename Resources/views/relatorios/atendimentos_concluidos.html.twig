@@ -19,7 +19,7 @@
     <tbody>
         {% for a in relatorio.dados.atendimentos %}
             <tr>
-                <td rowspan="2" class="vam tac">{{ a.senha.sigla }}{{ a.senha.numero }}</td>
+                <td rowspan="3" class="vam tac">{{ a.senha.sigla }}{{ a.senha.numero }}</td>
                 <td>{{ a.dataChegada|date('d/m/Y') }}</td>
                 <td>{{ a.dataChamada is empty ? "" : a.dataChamada|date('H:i:s') }}</td>
                 <td>{{ a.dataInicio is empty ? "" : a.dataInicio|date('H:i:s') }}</td>
@@ -30,7 +30,12 @@
                 <td>{{ a.usuario.login }}</td>
             </tr>
             <tr>
-                <td colspan="10" class="sub-table">
+                <td colspan="9">
+                    Observação: {{ a.observacao }}
+                </td>
+            </tr>
+            <tr>
+                <td colspan="9" class="sub-table">
                     <table class="table table-bordered">
                         <thead>
                             <tr>
