@@ -23,7 +23,7 @@
       </trans-unit>
       <trans-unit id="4">
         <source>label.dislocation_time</source>
-        <target>Tiempo de Espera</target>
+        <target>Tiempo de Deslocamento</target>
         
       </trans-unit>
       <trans-unit id="5">
