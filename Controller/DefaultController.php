@@ -45,7 +45,7 @@ class DefaultController extends Controller
      *
      * @Route("/", name="novosga_reports_index")
      */
-    public function indexAction(Request $request)
+    public function index(Request $request)
     {
         $unidade    = $this->getUnidade();
         $chartForm  = $this->createChartForm();
@@ -64,7 +64,7 @@ class DefaultController extends Controller
      *
      * @Route("/chart", name="novosga_reports_chart")
      */
-    public function chartAction(
+    public function chart(
         Request $request,
         AtendimentoService $atendimentoService,
         TranslatorInterface $translator
@@ -115,7 +115,7 @@ class DefaultController extends Controller
      *
      * @Route("/report", name="novosga_reports_report")
      */
-    public function reportAction(Request $request, UsuarioService $usuarioService)
+    public function report(Request $request, UsuarioService $usuarioService)
     {
         $form = $this->createReportForm();
         $form->handleRequest($request);
