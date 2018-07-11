@@ -13,8 +13,8 @@ namespace Novosga\ReportsBundle\Controller;
 
 use DateTime;
 use Exception;
-use Novosga\Entity\AtendimentoCodificadoHistorico;
-use Novosga\Entity\AtendimentoHistorico;
+use Novosga\Entity\ViewAtendimentoCodificado;
+use Novosga\Entity\ViewAtendimento;
 use Novosga\Entity\Lotacao;
 use Novosga\Entity\Perfil;
 use Novosga\Entity\Servico;
@@ -206,7 +206,7 @@ class DefaultController extends Controller
             ->getManager()
             ->createQueryBuilder()
             ->select('COUNT(e)')
-            ->from(AtendimentoHistorico::class, 'e')
+            ->from(ViewAtendimento::class, 'e')
             ->where('e.dataChegada >= :inicio')
             ->andWhere('e.dataChegada <= :fim')
             ->andWhere('e.unidade = :unidade')
@@ -237,7 +237,7 @@ class DefaultController extends Controller
                 's.nome as servico',
                 'COUNT(a) as total',
             ])
-            ->from(AtendimentoHistorico::class, 'a')
+            ->from(ViewAtendimento::class, 'a')
             ->join('a.unidade', 'u')
             ->join('a.servico', 's')
             ->where('a.status = :status')
@@ -285,7 +285,7 @@ class DefaultController extends Controller
                 'AVG(a.tempoAtendimento) as atendimento',
                 'AVG(a.tempoPermanencia) as total',
             ])
-            ->from(AtendimentoHistorico::class, 'a')
+            ->from(ViewAtendimento::class, 'a')
             ->join('a.unidade', 'u')
             ->where('a.dataChegada >= :inicio')
             ->andWhere('a.dataChegada <= :fim')
@@ -372,7 +372,7 @@ class DefaultController extends Controller
                 'COUNT(s.id) as total',
                 's.nome',
             ])
-            ->from(AtendimentoCodificadoHistorico::class, 'c')
+            ->from(ViewAtendimentoCodificado::class, 'c')
             ->join('c.servico', 's')
             ->join('c.atendimento', 'e')
             ->where('e.unidade = :unidade')
@@ -404,7 +404,7 @@ class DefaultController extends Controller
             ->getManager()
             ->createQueryBuilder()
             ->select('e')
-            ->from(AtendimentoHistorico::class, 'e')
+            ->from(ViewAtendimento::class, 'e')
             ->where('e.unidade = :unidade')
             ->andWhere('e.status = :status')
             ->andWhere('e.dataChegada >= :dataInicial')
@@ -435,7 +435,7 @@ class DefaultController extends Controller
             ->getManager()
             ->createQueryBuilder()
             ->select('e')
-            ->from(AtendimentoHistorico::class, 'e')
+            ->from(ViewAtendimento::class, 'e')
             ->where('e.unidade = :unidade')
             ->andWhere('e.dataChegada >= :dataInicial')
             ->andWhere('e.dataChegada <= :dataFinal')
@@ -471,7 +471,7 @@ class DefaultController extends Controller
                 'AVG(a.tempoAtendimento) as atendimento',
                 'AVG(a.tempoPermanencia) as tempoTotal',
             ])
-            ->from(AtendimentoHistorico::class, 'a')
+            ->from(ViewAtendimento::class, 'a')
             ->join('a.usuario', 'u')
             ->where('a.unidade = :unidade')
             ->andWhere('a.dataChegada >= :dataInicial')
@@ -555,7 +555,7 @@ class DefaultController extends Controller
         
         foreach ($perfis as $perfil) {
             $dados[$perfil->getId()] = [
-                'perfil'      => $perfil->getNome(),
+                'perfil'     => $perfil->getNome(),
                 'permissoes' => $perfil->getModulos(),
             ];
         }
