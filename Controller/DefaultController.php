@@ -340,6 +340,7 @@ class DefaultController extends Controller
             ->createQueryBuilder()
             ->select([
                 'e',
+                's',
                 'sub'
             ])
             ->from(ServicoUnidade::class, 'e')
@@ -349,8 +350,8 @@ class DefaultController extends Controller
             ->andWhere('e.ativo = TRUE')
             ->andWhere('e.unidade = :unidade')
             ->orderBy('s.nome', 'ASC')
-            ->getQuery()
             ->setParameter('unidade', $unidade)
+            ->getQuery()
             ->getResult();
         
         $dados = [
@@ -550,7 +551,7 @@ class DefaultController extends Controller
         $perfis = $this
             ->getDoctrine()
             ->getRepository(Perfil::class)
-            ->findBy([], [ 'e.nome' => 'ASC' ]);
+            ->findBy([], [ 'nome' => 'ASC' ]);
         
         foreach ($perfis as $perfil) {
             $dados[$perfil->getId()] = [
