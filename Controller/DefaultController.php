@@ -25,7 +25,7 @@ use Novosga\ReportsBundle\Form\ChartType;
 use Novosga\ReportsBundle\Form\ReportType;
 use Novosga\Service\AtendimentoService;
 use Novosga\Service\UsuarioService;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -43,7 +43,7 @@ class DefaultController extends Controller
      *
      * @param Request $request
      *
-     * @Route("/", name="novosga_reports_index")
+     * @Route("/", name="novosga_reports_index", methods={"GET"})
      */
     public function index(Request $request)
     {
@@ -62,7 +62,7 @@ class DefaultController extends Controller
      *
      * @param Request $request
      *
-     * @Route("/chart", name="novosga_reports_chart")
+     * @Route("/chart", name="novosga_reports_chart", methods={"POST"})
      */
     public function chart(
         Request $request,
@@ -71,8 +71,9 @@ class DefaultController extends Controller
     ) {
         $envelope = new Envelope();
         
-        $form = $this->createChartForm();
-        $form->handleRequest($request);
+        $form = $this
+            ->createChartForm()
+            ->handleRequest($request);
         
         if (!$form->isSubmitted() || !$form->isValid()) {
             throw new Exception('Formulário inválido');
@@ -113,12 +114,13 @@ class DefaultController extends Controller
      *
      * @param Request $request
      *
-     * @Route("/report", name="novosga_reports_report")
+     * @Route("/report", name="novosga_reports_report", methods={"GET"})
      */
     public function report(Request $request, UsuarioService $usuarioService)
     {
-        $form = $this->createReportForm();
-        $form->handleRequest($request);
+        $form = $this
+            ->createReportForm()
+            ->handleRequest($request);
         
         if (!$form->isSubmitted() || !$form->isValid()) {
             throw new Exception('Formulário inválido');
