@@ -1,3 +1,5 @@
+{% trans_default_domain 'NovosgaReportsBundle' %}
+
 <div class="header">
     <h2>{{ relatorio.dados.unidade }}</h2>
     <p>{% trans with {'%dataInicial%': dataInicial, '%dataFinal%': dataFinal} from "app" %}Período de %dataInicial% a %dataFinal%{% endtrans %}</p>
