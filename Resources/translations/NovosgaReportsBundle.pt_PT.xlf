@@ -1,99 +1,96 @@
 <?xml version="1.0" ?><xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file datatype="plaintext" original="messages.pt_BR.xlf" source-language="pt-BR" target-language="en">
+  <file datatype="plaintext" original="messages.pt_BR.xlf" source-language="pt-BR" target-language="pt-PT">
     <body>
       <trans-unit id="0">
         <source>module.name</source>
-        <target>Reports</target>
+        <target>Relatórios</target>
         
       </trans-unit>
       <trans-unit id="1">
         <source>title</source>
-        <target>Reports</target>
+        <target>Relatórios</target>
         
       </trans-unit>
       <trans-unit id="2">
         <source>subtitle</source>
-        <target>System reports and graphs.</target>
         
       </trans-unit>
       <trans-unit id="3">
         <source>label.wait_time</source>
-        <target>Waiting time</target>
+        <target>Tempo de Espera</target>
         
       </trans-unit>
       <trans-unit id="4">
         <source>label.dislocation_time</source>
-        <target>Dislocation time</target>
+        <target>Tempo de Deslocamento</target>
         
       </trans-unit>
       <trans-unit id="5">
         <source>label.servicing_time</source>
-        <target>Servicing's time</target>
+        <target>Tempo de Atendimento</target>
         
       </trans-unit>
       <trans-unit id="6">
         <source>label.total_time</source>
-        <target>Total time</target>
+        <target>Tempo Total</target>
         
       </trans-unit>
       <trans-unit id="7">
         <source>chart.servicing_by_status</source>
-        <target>Servicing by status</target>
+        <target>Atendimentos por estado</target>
         
       </trans-unit>
       <trans-unit id="8">
         <source>chart.servicing_by_service</source>
-        <target>Servicing by service </target>
+        <target>Atendimentos por serviço</target>
         
       </trans-unit>
       <trans-unit id="9">
         <source>chart.avg_servicing_time</source>
-        <target>Average Servicing Time </target>
+        <target>Tempo médio do atendimento</target>
         
       </trans-unit>
       <trans-unit id="10">
         <source>report.services_available_global</source>
-        <target>Services available - Global </target>
+        <target>Serviços Disponíveis - Global</target>
         
       </trans-unit>
       <trans-unit id="11">
         <source>report.services_available_unity</source>
-        <target>Services available - Unit</target>
+        <target>Serviços Disponíveis - Unidade</target>
         
       </trans-unit>
       <trans-unit id="12">
         <source>report.services_performed</source>
-        <target>Services performed</target>
         
       </trans-unit>
       <trans-unit id="13">
         <source>report.finished_servicing</source>
-        <target>Finished servicing</target>
+        <target>Atendimentos concluídos</target>
         
       </trans-unit>
       <trans-unit id="14">
         <source>report.servicing_all_status</source>
-        <target>Servicing at all status</target>
+        <target>Atendimentos em todos os estados</target>
         
       </trans-unit>
       <trans-unit id="15">
         <source>report.avg_time_servicing</source>
-        <target>Average time by servicing </target>
+        <target>Tempos médios por Atendente</target>
         
       </trans-unit>
       <trans-unit id="16">
         <source>report.lotations</source>
-        <target>Lotations</target>
+        <target>Alocações</target>
         
       </trans-unit>
       <trans-unit id="17">
         <source>report.roles</source>
-        <target>Roles</target>
         
       </trans-unit>
       <trans-unit id="18">
         <source>label.ticket</source>
-        <target>Password</target>
+        <target>Senha</target>
         
       </trans-unit>
     </body>

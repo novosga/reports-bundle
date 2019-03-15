@@ -23,7 +23,7 @@
       </trans-unit>
       <trans-unit id="4">
         <source>label.dislocation_time</source>
-        <target>Tiempo de Deslocamento</target>
+        <target>Tiempo de desplazamiento</target>
         
       </trans-unit>
       <trans-unit id="5">
@@ -38,7 +38,7 @@
       </trans-unit>
       <trans-unit id="7">
         <source>chart.servicing_by_status</source>
-        <target>Atención por status</target>
+        <target>Atención por estado</target>
         
       </trans-unit>
       <trans-unit id="8">
@@ -63,6 +63,7 @@
       </trans-unit>
       <trans-unit id="12">
         <source>report.services_performed</source>
+        <target>Servicios realizados</target>
         
       </trans-unit>
       <trans-unit id="13">
@@ -72,7 +73,7 @@
       </trans-unit>
       <trans-unit id="14">
         <source>report.servicing_all_status</source>
-        <target>Atenciones en todos los status</target>
+        <target>Atenciones en todos los estados</target>
         
       </trans-unit>
       <trans-unit id="15">
@@ -92,6 +93,7 @@
       </trans-unit>
       <trans-unit id="18">
         <source>label.ticket</source>
+        <target>Turno</target>
         
       </trans-unit>
     </body>
