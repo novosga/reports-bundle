@@ -40,6 +40,8 @@
                         {{ form_row(chartForm.startDate, { label: 'Data inicial', attr: { class: 'datepicker' } }) }}
 
                         {{ form_row(chartForm.endDate, { label: 'Data final', attr: { class: 'datepicker' } }) }}
+
+                        {{ form_row(chartForm.usuario, { label: 'Usuário' }) }}
                         
                         <button type="submit" class="btn btn-primary">
                             {% trans %}Gerar gráfico{% endtrans %}
@@ -63,6 +65,10 @@
 
                 <div class="option date date-range" style="display:none">
                     {{ form_row(reportForm.endDate, { label: 'Data final', attr: { class: 'datepicker' } }) }}
+                </div>
+
+                <div class="option user" style="display:none">
+                    {{ form_row(reportForm.usuario, { label: 'Usuário' }) }}
                 </div>
                 
                 <button type="submit" class="btn btn-primary">

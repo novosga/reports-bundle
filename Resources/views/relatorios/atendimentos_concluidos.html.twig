@@ -2,6 +2,9 @@
 
 <div class="header">
     <h2>{{ relatorio.dados.unidade }}</h2>
+    {% if relatorio.dados.usuario %}
+        <h4>{{ relatorio.dados.usuario.nomeCompleto }}</h4>
+    {% endif %}
     <p>{% trans with {'%dataInicial%': dataInicial, '%dataFinal%': dataFinal} from "app" %}Período de %dataInicial% a %dataFinal%{% endtrans %}</p>
 </div>
 <table class="table table-bordered table-striped">

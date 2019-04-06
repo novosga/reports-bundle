@@ -12,8 +12,11 @@
 namespace Novosga\ReportsBundle\Form;
 
 use DateTime;
+use Doctrine\ORM\EntityRepository;
+use Novosga\Entity\Usuario;
 use Novosga\ReportsBundle\Controller\DefaultController;
 use Novosga\ReportsBundle\Helper\Grafico;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -77,6 +80,16 @@ class ChartType extends AbstractType
                     new NotNull(),
                 ],
                 'data' => $today,
+            ])
+            ->add('usuario', EntityType::class, [
+                'class'         => Usuario::class,
+                'required'      => false,
+                'placeholder'   => 'Todos',
+                'query_builder' => function (EntityRepository $repo) {
+                    return $repo
+                        ->createQueryBuilder('e')
+                        ->orderBy('e.nome', 'ASC');
+                },
             ])
         ;
     }

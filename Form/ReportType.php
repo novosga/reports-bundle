@@ -12,7 +12,11 @@
 namespace Novosga\ReportsBundle\Form;
 
 use DateTime;
+use Doctrine\ORM\EntityRepository;
+use Novosga\Entity\Usuario;
 use Novosga\ReportsBundle\Helper\Relatorio;
+use Novosga\ReportsBundle\Controller\DefaultController;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -20,7 +24,6 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints\NotNull;
-use Novosga\ReportsBundle\Controller\DefaultController;
 
 class ReportType extends AbstractType
 {
@@ -58,9 +61,9 @@ class ReportType extends AbstractType
                 'choices' => [
                     new Relatorio(1, $report1, 'servicos_disponiveis_global'),
                     new Relatorio(2, $report2, 'servicos_disponiveis_unidade'),
-                    new Relatorio(3, $report3, 'servicos_realizados', 'date-range'),
-                    new Relatorio(4, $report4, 'atendimentos_concluidos', 'date-range'),
-                    new Relatorio(5, $report5, 'atendimentos_status', 'date-range'),
+                    new Relatorio(3, $report3, 'servicos_realizados', 'date-range,user'),
+                    new Relatorio(4, $report4, 'atendimentos_concluidos', 'date-range,user'),
+                    new Relatorio(5, $report5, 'atendimentos_status', 'date-range,user'),
                     new Relatorio(6, $report6, 'tempo_medio_atendentes', 'date-range'),
                     new Relatorio(7, $report7, 'lotacoes', 'unidade'),
                     new Relatorio(8, $report8, 'perfis'),
@@ -86,6 +89,16 @@ class ReportType extends AbstractType
                 'widget' => 'single_text',
                 'format' => 'dd/MM/yyyy',
                 'data' => $today,
+            ])
+            ->add('usuario', EntityType::class, [
+                'class'         => Usuario::class,
+                'placeholder'   => 'Todos',
+                'required'      => false,
+                'query_builder' => function (EntityRepository $repo) {
+                    return $repo
+                        ->createQueryBuilder('e')
+                        ->orderBy('e.nome', 'ASC');
+                },
             ])
         ;
     }

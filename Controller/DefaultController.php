@@ -82,6 +82,7 @@ class DefaultController extends AbstractController
         $grafico     = $form->get('chart')->getData();
         $dataInicial = $form->get('startDate')->getData();
         $dataFinal   = $form->get('endDate')->getData();
+        $usuario     = $form->get('usuario')->getData();
         $unidade     = $this->getUnidade();
         
         $dataInicial->setTime(0, 0, 0);
@@ -90,16 +91,16 @@ class DefaultController extends AbstractController
         switch ($grafico->getId()) {
             case 1:
                 $situacoes = $atendimentoService->situacoes();
-                $dados     = $this->totalAtendimentosStatus($situacoes, $dataInicial, $dataFinal, $unidade);
+                $dados     = $this->totalAtendimentosStatus($situacoes, $dataInicial, $dataFinal, $unidade, $usuario);
                 $grafico->setLegendas($situacoes);
                 $grafico->setDados($dados);
                 break;
             case 2:
-                $dados = $this->totalAtendimentosServico($dataInicial, $dataFinal, $unidade);
+                $dados = $this->totalAtendimentosServico($dataInicial, $dataFinal, $unidade, $usuario);
                 $grafico->setDados($dados);
                 break;
             case 3:
-                $dados = $this->tempoMedioAtendimentos($translator, $dataInicial, $dataFinal, $unidade);
+                $dados = $this->tempoMedioAtendimentos($translator, $dataInicial, $dataFinal, $unidade, $usuario);
                 $grafico->setDados($dados);
                 break;
         }
@@ -129,6 +130,7 @@ class DefaultController extends AbstractController
         $relatorio   = $form->get('report')->getData();
         $dataInicial = $form->get('startDate')->getData();
         $dataFinal   = $form->get('endDate')->getData();
+        $usuario     = $form->get('usuario')->getData();
         $unidade     = $this->getUnidade();
         
         if (!$dataInicial) {
@@ -150,13 +152,13 @@ class DefaultController extends AbstractController
                 $relatorio->setDados($this->servicosDisponiveisUnidade($unidade));
                 break;
             case 3:
-                $relatorio->setDados($this->servicosRealizados($dataInicial, $dataFinal, $unidade));
+                $relatorio->setDados($this->servicosRealizados($dataInicial, $dataFinal, $unidade, $usuario));
                 break;
             case 4:
-                $relatorio->setDados($this->atendimentosConcluidos($dataInicial, $dataFinal, $unidade));
+                $relatorio->setDados($this->atendimentosConcluidos($dataInicial, $dataFinal, $unidade, $usuario));
                 break;
             case 5:
-                $relatorio->setDados($this->atendimentosStatus($dataInicial, $dataFinal, $unidade));
+                $relatorio->setDados($this->atendimentosStatus($dataInicial, $dataFinal, $unidade, $usuario));
                 break;
             case 6:
                 $relatorio->setDados($this->tempoMedioAtendentes($dataInicial, $dataFinal, $unidade));
@@ -200,8 +202,13 @@ class DefaultController extends AbstractController
         return $form;
     }
 
-    private function totalAtendimentosStatus($situacoes, DateTime $dataInicial, DateTime $dataFinal, $unidade)
-    {
+    private function totalAtendimentosStatus(
+        $situacoes,
+        DateTime $dataInicial,
+        DateTime $dataFinal,
+        $unidade,
+        $usuario
+    ) {
         $dados = [];
         $query = $this
             ->getDoctrine()
@@ -213,10 +220,12 @@ class DefaultController extends AbstractController
             ->andWhere('e.dataChegada <= :fim')
             ->andWhere('e.unidade = :unidade')
             ->andWhere('e.status = :status')
+            ->andWhere('(:usuario IS NULL OR e.usuario = :usuario)')
             ->setParameters([
                 'inicio'  => $dataInicial,
                 'fim'     => $dataFinal,
-                'unidade' => $unidade->getId()
+                'unidade' => $unidade->getId(),
+                'usuario' => $usuario,
             ])
             ->getQuery();
         
@@ -228,8 +237,12 @@ class DefaultController extends AbstractController
         return $dados;
     }
 
-    private function totalAtendimentosServico(DateTime $dataInicial, DateTime $dataFinal, $unidade)
-    {
+    private function totalAtendimentosServico(
+        DateTime $dataInicial,
+        DateTime $dataFinal,
+        $unidade,
+        $usuario
+    ) {
         $dados = [];
         $rs = $this
             ->getDoctrine()
@@ -246,12 +259,14 @@ class DefaultController extends AbstractController
             ->andWhere('a.dataChegada >= :inicio')
             ->andWhere('a.dataChegada <= :fim')
             ->andWhere('a.unidade = :unidade')
+            ->andWhere('(:usuario IS NULL OR a.usuario = :usuario)')
             ->groupBy('s')
             ->setParameters([
                 'status' => AtendimentoService::ATENDIMENTO_ENCERRADO,
                 'inicio'  => $dataInicial,
                 'fim'     => $dataFinal,
-                'unidade' => $unidade->getId()
+                'unidade' => $unidade->getId(),
+                'usuario' => $usuario,
             ])
             ->getQuery()
             ->getResult();
@@ -267,7 +282,8 @@ class DefaultController extends AbstractController
         TranslatorInterface $translator,
         DateTime $dataInicial,
         DateTime $dataFinal,
-        $unidade
+        $unidade,
+        $usuario
     ) {
         $dados  = [];
         $tempos = [
@@ -292,10 +308,12 @@ class DefaultController extends AbstractController
             ->where('a.dataChegada >= :inicio')
             ->andWhere('a.dataChegada <= :fim')
             ->andWhere('a.unidade = :unidade')
+            ->andWhere('(:usuario IS NULL OR a.usuario = :usuario)')
             ->setParameters([
                 'inicio'  => $dataInicial,
                 'fim'     => $dataFinal,
                 'unidade' => $unidade->getId(),
+                'usuario' => $usuario,
             ])
             ->getQuery()
             ->getResult();
@@ -364,7 +382,7 @@ class DefaultController extends AbstractController
         return $dados;
     }
 
-    private function servicosRealizados(DateTime $dataInicial, DateTime $dataFinal, $unidade)
+    private function servicosRealizados(DateTime $dataInicial, DateTime $dataFinal, $unidade, $usuario)
     {
         $rs = $this
             ->getDoctrine()
@@ -380,12 +398,14 @@ class DefaultController extends AbstractController
             ->where('e.unidade = :unidade')
             ->andWhere('e.dataChegada >= :dataInicial')
             ->andWhere('e.dataChegada <= :dataFinal')
+            ->andWhere('(:usuario IS NULL OR e.usuario = :usuario)')
             ->groupBy('s')
             ->orderBy('s.nome', 'ASC')
             ->setParameters([
                 'dataInicial' => $dataInicial,
                 'dataFinal'   => $dataFinal,
                 'unidade'     => $unidade,
+                'usuario'     => $usuario,
             ])
             ->setMaxResults(self::MAX_RESULTS)
             ->getQuery()
@@ -393,13 +413,14 @@ class DefaultController extends AbstractController
         
         $dados = [
             'unidade'  => $unidade->getNome(),
+            'usuario'  => $usuario,
             'servicos' => $rs,
         ];
 
         return $dados;
     }
 
-    private function atendimentosConcluidos(DateTime $dataInicial, DateTime $dataFinal, $unidade)
+    private function atendimentosConcluidos(DateTime $dataInicial, DateTime $dataFinal, $unidade, $usuario)
     {
         $rs = $this
             ->getDoctrine()
@@ -411,12 +432,14 @@ class DefaultController extends AbstractController
             ->andWhere('e.status = :status')
             ->andWhere('e.dataChegada >= :dataInicial')
             ->andWhere('e.dataChegada <= :dataFinal')
+            ->andWhere('(:usuario IS NULL OR e.usuario = :usuario)')
             ->orderBy('e.dataChegada', 'ASC')
             ->setParameters([
                 'status'      => AtendimentoService::ATENDIMENTO_ENCERRADO,
                 'dataInicial' => $dataInicial,
                 'dataFinal'   => $dataFinal,
-                'unidade'     => $unidade
+                'unidade'     => $unidade,
+                'usuario'     => $usuario,
             ])
             ->getQuery()
             ->setMaxResults(self::MAX_RESULTS)
@@ -424,13 +447,14 @@ class DefaultController extends AbstractController
         
         $dados = [
             'unidade'      => $unidade->getNome(),
+            'usuario'      => $usuario,
             'atendimentos' => $rs,
         ];
 
         return $dados;
     }
 
-    private function atendimentosStatus(DateTime $dataInicial, DateTime $dataFinal, $unidade)
+    private function atendimentosStatus(DateTime $dataInicial, DateTime $dataFinal, $unidade, $usuario)
     {
         $rs = $this
             ->getDoctrine()
@@ -441,11 +465,13 @@ class DefaultController extends AbstractController
             ->where('e.unidade = :unidade')
             ->andWhere('e.dataChegada >= :dataInicial')
             ->andWhere('e.dataChegada <= :dataFinal')
+            ->andWhere('(:usuario IS NULL OR e.usuario = :usuario)')
             ->orderBy('e.dataChegada', 'ASC')
             ->setParameters([
                 'dataInicial' => $dataInicial,
                 'dataFinal'   => $dataFinal,
-                'unidade'     => $unidade
+                'unidade'     => $unidade,
+                'usuario'     => $usuario,
             ])
             ->getQuery()
             ->setMaxResults(self::MAX_RESULTS)
@@ -453,6 +479,7 @@ class DefaultController extends AbstractController
         
         $dados = [
             'unidade'      => $unidade->getNome(),
+            'usuario'      => $usuario,
             'atendimentos' => $rs,
         ];
 

@@ -103,6 +103,26 @@ App.Estatisticas = {
             
             new Chart(ctx, {
                 type: 'bar',
+                options: {
+                    scales: {
+                        yAxes: [
+                            {
+                                ticks: {
+                                    callback: function(label, index, labels) {
+                                        return App.Estatisticas.secToTime(label);
+                                    }
+                                }
+                            }
+                        ],
+                    },
+                    tooltips: {
+                        callbacks: {
+                            label: function(tooltipItem, data) {
+                                return App.Estatisticas.secToTime(tooltipItem.yLabel);
+                            }
+                        }
+                    }
+                },
                 data: {
                     datasets: [{
                         label: prop.titulo,
@@ -121,7 +141,7 @@ App.Estatisticas = {
         mins = mins < 10 ? '0' + mins : mins;
         var secs = Math.floor((seconds - (hours * 3600) - (mins * 60)));
         secs = secs < 10 ? '0' + secs : secs;
-        return hours + ":" + mins + ":" + secs;
+        return (hours > 0 ? hours + ":" : '') + mins + ":" + secs;
     },
     
     dateToSql: function (localeDate) {
