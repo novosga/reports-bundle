@@ -2,7 +2,7 @@
 
 <div class="header">
     <h2>{{ relatorio.dados.unidade }}</h2>
-    <p>{% trans with {'%dataInicial%': dataInicial, '%dataFinal%': dataFinal} from "app" %}Período de %dataInicial% a %dataFinal%{% endtrans %}</p>
+    <p>{% trans %} report.period {% endtrans %} {{ dataInicial }} - {{ dataFinal }}</p>
 </div>
 
 {% set total = 0 %}
@@ -15,12 +15,12 @@
 <table class="table table-bordered table-striped">
     <thead class="thead-light">
         <tr>
-            <th>{% trans %}Usuário{% endtrans %}</th>
-            <th>{% trans %}Atendimentos{% endtrans %}</th>
-            <th title="{% trans %}Tempo médio de espera{% endtrans %}">{% trans %}TME{% endtrans %}</th>
-            <th title="{% trans %}Tempo médio de deslocamento{% endtrans %}">{% trans %}TMD{% endtrans %}</th>
-            <th title="{% trans %}Tempo médio de atendimento{% endtrans %}">{% trans %}TMA{% endtrans %}</th>
-            <th>{% trans %}Tempo total{% endtrans %}</th>
+            <th>{% trans %}user.ido{% endtrans %}</th>
+            <th>{% trans %}report.attendances{% endtrans %}</th>
+            <th title="{% trans %}report.awt.text{% endtrans %}">{% trans %}report.awt{% endtrans %}</th>
+            <th title="{% trans %}report.att.text{% endtrans %}">{% trans %}report.att{% endtrans %}</th>
+            <th title="{% trans %}report.ast.text{% endtrans %}">{% trans %}report.ast{% endtrans %}</th>
+            <th>{% trans %}label.total_time{% endtrans %}</th>
         </tr>
     </thead>
     <tbody>
@@ -53,10 +53,10 @@
     </tfoot>
 </table>
 <div>
-    <h4>{% trans %}Legenda{% endtrans %}</h4>
+    <h4>{% trans %}report.legend{% endtrans %}</h4>
     <ul>
-        <li><strong>{% trans %}TME{% endtrans %}</strong>: {% trans %}Tempo médio de espera{% endtrans %}</li>
-        <li><strong>{% trans %}TMD{% endtrans %}</strong>: {% trans %}Tempo médio de deslocamento{% endtrans %}</li>
-        <li><strong>{% trans %}TMA{% endtrans %}</strong>: {% trans %}Tempo médio de atendimento{% endtrans %}</li>
+        <li><strong>{% trans %}report.awt{% endtrans %}</strong>: {% trans %}report.awt.text{% endtrans %}</li>
+        <li><strong>{% trans %}report.att{% endtrans %}</strong>: {% trans %}report.att.text{% endtrans %}</li>
+        <li><strong>{% trans %}report.ast{% endtrans %}</strong>: {% trans %}report.ast.text{% endtrans %}</li>
     </ul>
 </div>

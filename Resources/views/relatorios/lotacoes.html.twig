@@ -6,11 +6,11 @@
 <table class="table table-bordered table-striped">
     <thead class="thead-light">
         <tr>
-            <th>{% trans %}Usuário{% endtrans %}</th>
-            <th>{% trans %}Nome{% endtrans %}</th>
-            <th>{% trans %}Perfil{% endtrans %}</th>
-            <th>{% trans %}Serviços{% endtrans %}</th>
-            <th>{% trans %}Situação{% endtrans %}</th>
+            <th>{% trans %}user.id{% endtrans %}</th>
+            <th>{% trans %}user.name{% endtrans %}</th>
+            <th>{% trans %}user.profile{% endtrans %}</th>
+            <th>{% trans %}report.services{% endtrans %}</th>
+            <th>{% trans %}report.status{% endtrans %}</th>
         </tr>
     </thead>
     <tbody>
@@ -28,9 +28,9 @@
                 </td>
                 <td class="w75 center">
                     {% if lotacao.usuario.ativo %}
-                        <span class="status-active">{% trans %}Ativo{% endtrans %}</span>
+                        <span class="status-active">{% trans %}report.detail.status.enabled{% endtrans %}</span>
                     {% else %}
-                        <span class="status-inactive">{% trans %}Inativo{% endtrans %}</span>
+                        <span class="status-inactive">{% trans %}report.detail.status.disabled{% endtrans %}</span>
                     {% endif %}
                 </td>
             </tr>

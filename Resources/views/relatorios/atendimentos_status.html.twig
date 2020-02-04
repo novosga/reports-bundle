@@ -2,20 +2,21 @@
 
 <div class="header">
     <h2>{{ relatorio.dados.unidade }}</h2>
-    <p>{% trans with {'%dataInicial%': dataInicial, '%dataFinal%': dataFinal} from "app" %}Período de %dataInicial% a %dataFinal%{% endtrans %}</p>
+    <p>{% trans %} report.period {% endtrans %} {{ dataInicial }} - {{ dataFinal }}</p>
+
 </div>
 <table class="table table-bordered table-striped">
     <thead class="thead-light">
         <tr>
             <th>{{ 'label.ticket'|trans }}</th>
-            <th>{% trans %}Cliente{% endtrans %}</th>
-            <th>{% trans %}Data{% endtrans %}</th>
-            <th title="{% trans %}Hora de Chamada{% endtrans %}">{% trans %}Chamada{% endtrans %}</th>
-            <th title="{% trans %}Hora do Início do atendimento{% endtrans %}">{% trans %}Início{% endtrans %}</th>
-            <th title="{% trans %}Hora do Fim do atendimento{% endtrans %}">{% trans %}Fim{% endtrans %}</th>
-            <th title="{% trans %}Serviço escolhido na triagem{% endtrans %}">{% trans %}Serviço Triado{% endtrans %}</th>
-            <th>{% trans %}Status{% endtrans %}</th>
-            <th>{% trans %}Atendente{% endtrans %}</th>
+            <th>{% trans %}report.detail.customer{% endtrans %}</th>
+            <th>{% trans %}report.detail.date{% endtrans %}</th>
+            <th title="{% trans %}report.detail.call.text{% endtrans %}">{% trans %}report.detail.call{% endtrans %}</th>
+            <th title="{% trans %}report.detail.start.text{% endtrans %}">{% trans %}report.detail.start{% endtrans %}</th>
+            <th title="{% trans %}report.detail.end.text{% endtrans %}">{% trans %}report.detail.end{% endtrans %}</th>
+            <th title="{% trans %}report.detail.service.text{% endtrans %}">{% trans %}report.detail.service{% endtrans %}</th>
+            <th>{% trans %}report.detail.status{% endtrans %}</th>
+            <th>{% trans %}report.detail.attendant{% endtrans %}</th>
         </tr>
     </thead>
     <tbody>
@@ -40,7 +41,7 @@
     <tfoot>
         <tr>
             <td colspan="9">
-                <strong>Total: {{ relatorio.dados.atendimentos|length }}</strong>
+                <strong>{{ 'report.total'|trans }}: {{ relatorio.dados.atendimentos|length }}</strong>
             </td>
         </tr>
     </tfoot>

@@ -46,10 +46,11 @@ class ChartType extends AbstractType
         $chart1 = $this->translator->trans('chart.servicing_by_status', [], DefaultController::DOMAIN);
         $chart2 = $this->translator->trans('chart.servicing_by_service', [], DefaultController::DOMAIN);
         $chart3 = $this->translator->trans('chart.avg_servicing_time', [], DefaultController::DOMAIN);
+        $placeholder = $this->translator->trans('report.select.placeholder', [], DefaultController::DOMAIN);
         
         $builder
             ->add('chart', ChoiceType::class, [
-                'placeholder' => 'Selecione',
+                'placeholder' => $placeholder,
                 'choices' => [
                     new Grafico(1, $chart1, 'pie', 'date-range'),
                     new Grafico(2, $chart2, 'pie', 'date-range'),
