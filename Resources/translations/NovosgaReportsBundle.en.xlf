@@ -93,9 +93,221 @@
       </trans-unit>
       <trans-unit id="18">
         <source>label.ticket</source>
-        <target>Password</target>
-        
+        <target>Ticket</target>
       </trans-unit>
+      
+      <trans-unit id="19">
+        <source>label.graphics</source>
+        <target>Graphics</target>
+      </trans-unit>
+      <trans-unit id="20">
+        <source>label.reports</source>
+        <target>Reports</target>
+      </trans-unit>
+      <trans-unit id="21">
+        <source>label.graphic</source>
+        <target>Graphic</target>
+      </trans-unit>
+      <trans-unit id="22">
+        <source>label.report.date.init</source>
+        <target>Start date</target>
+      </trans-unit>
+      <trans-unit id="23">
+        <source>label.report.date.end</source>
+        <target>End date</target>
+      </trans-unit>
+      <trans-unit id="24">
+        <source>button.report.generate.graphic</source>
+        <target>Generate graphic</target>
+      </trans-unit>
+      <trans-unit id="25">
+        <source>label.report</source>
+        <target>Report</target>
+      </trans-unit>
+      <trans-unit id="26">
+        <source>button.report.generate.report</source>
+        <target>Generate report</target>
+      </trans-unit>
+      <trans-unit id="27">
+        <source>datepicker.date.format</source>
+        <target>mm/dd/yyyy</target>
+      </trans-unit>
+      <trans-unit id="28">
+        <source>report.print</source>
+        <target>Print</target>
+      </trans-unit>
+      <trans-unit id="29">
+        <source>report.services</source>
+        <target>Services</target>
+      </trans-unit>
+      <trans-unit id="30">
+        <source>report.status</source>
+        <target>Status</target>
+      </trans-unit>
+      <trans-unit id="31">
+        <source>report.subservice</source>
+        <target>Subservice</target>
+      </trans-unit>
+      <trans-unit id="32">
+        <source>report.subservice.enabled</source>
+        <target>Enabled</target>
+      </trans-unit>
+      <trans-unit id="33">
+        <source>report.subservice.disabled</source>
+        <target>Disabled</target>
+      </trans-unit>
+      <trans-unit id="34">
+        <source>report.service.prefix</source>
+        <target>Prefix</target>
+      </trans-unit>
+
+      <trans-unit id="35">
+        <source>report.service</source>
+        <target>Services</target>
+      </trans-unit>
+      <trans-unit id="36">
+        <source>report.total</source>
+        <target>Total</target>
+      </trans-unit>
+      <trans-unit id="37">
+        <source>report.period</source>
+        <target>Period: </target>
+      </trans-unit>
+      <trans-unit id="38">
+        <source>report.detail.date</source>
+        <target>Date</target>
+      </trans-unit>
+      <trans-unit id="39">
+        <source>report.detail.call</source>
+        <target>Call</target>
+      </trans-unit>
+      <trans-unit id="40">
+        <source>report.detail.start</source>
+        <target>Start</target>
+      </trans-unit>
+      <trans-unit id="41">
+        <source>report.detail.end</source>
+        <target>End</target>
+      </trans-unit>
+      <trans-unit id="42">
+        <source>report.detail.attendance_time</source>
+        <target>Duration</target>
+      </trans-unit>
+      <trans-unit id="43">
+        <source>report.detail.stay_time</source>
+        <target>Stay time</target>
+      </trans-unit>
+      <trans-unit id="44">
+        <source>report.detail.service</source>
+        <target>Selected services</target>
+      </trans-unit>
+      <trans-unit id="45">
+        <source>report.detail.attendant</source>
+        <target>Attendant</target>
+      </trans-unit>
+      <trans-unit id="46">
+        <source>report.detail.comment</source>
+        <target>Remarks</target>
+      </trans-unit>
+      <trans-unit id="47">
+        <source>report.detail.services</source>
+        <target>Performed services</target>
+      </trans-unit>
+      <trans-unit id="48">
+        <source>report.detail.status</source>
+        <target>Status</target>
+      </trans-unit>
+
+      <trans-unit id="49">
+        <source>user.id</source>
+        <target>User</target>
+      </trans-unit>
+
+      <trans-unit id="50">
+        <source>user.name</source>
+        <target>Name</target>
+      </trans-unit>
+
+      <trans-unit id="51">
+        <source>user.profile</source>
+        <target>Profile</target>
+      </trans-unit>
+
+      <trans-unit id="52">
+        <source>report.detail.call.text</source>
+        <target>Call time</target>
+      </trans-unit>
+
+      <trans-unit id="53">
+        <source>report.detail.start.text</source>
+        <target>Attendance time</target>
+      </trans-unit>
+
+      <trans-unit id="54">
+        <source>report.detail.end.text</source>
+        <target>End of attendance</target>
+      </trans-unit>
+
+      <trans-unit id="55">
+        <source>report.detail.service.text</source>
+        <target>On screen selected service</target>
+      </trans-unit>
+
+      <trans-unit id="56">
+        <source>report.modules</source>
+        <target>Modules</target>
+      </trans-unit>
+
+      <trans-unit id="57">
+        <source>report.attendances</source>
+        <target>Atendances</target>
+      </trans-unit>
+
+      <trans-unit id="58">
+        <source>report.awt</source>
+        <target>AWT</target>
+      </trans-unit>
+
+      <trans-unit id="59">
+        <source>report.awt.text</source>
+        <target>Average wait time</target>
+      </trans-unit>
+
+      <trans-unit id="60">
+        <source>report.att</source>
+        <target>ATT</target>
+      </trans-unit>
+
+      <trans-unit id="61">
+        <source>report.att.text</source>
+        <target>Average travel time</target>
+      </trans-unit>
+
+      <trans-unit id="62">
+        <source>report.ast</source>
+        <target>AST</target>
+      </trans-unit>
+
+      <trans-unit id="63">
+        <source>report.ast.text</source>
+        <target>Average service time</target>
+      </trans-unit>
+
+       <trans-unit id="64">
+        <source>report.legend</source>
+        <target>Legend</target>
+      </trans-unit>
+
+       <trans-unit id="65">
+        <source>report.detail.customer</source>
+        <target>Customer</target>
+      </trans-unit>
+
+      <trans-unit id="66">
+        <source>report.select.placeholder</source>
+        <target>Select</target>
+      </trans-unit>
+      
     </body>
   </file>
 </xliff>

@@ -20,12 +20,12 @@
     <ul class="nav nav-tabs">
         <li class="nav-item">
             <a href="#tab-graficos" data-toggle="tab" class="nav-link active">
-                {% trans %}Gráficos{% endtrans %}
+                {{ 'label.graphics'|trans }}
             </a>
         </li>
         <li class="nav-item">
             <a href="#tab-relatorios" data-toggle="tab" class="nav-link">
-                {% trans %}Relatórios{% endtrans %}
+                {{ 'label.reports'|trans }}
             </a>
         </li>
     </ul>
@@ -35,14 +35,14 @@
                 <div class="row">
                     <div class="col-lg-3 col-md-4">
                         
-                        {{ form_row(chartForm.chart, { label: 'Gráfico' }) }}
+                        {{ form_row(chartForm.chart, { label: 'label.graphic'|trans }) }}
 
-                        {{ form_row(chartForm.startDate, { label: 'Data inicial', attr: { class: 'datepicker' } }) }}
+                        {{ form_row(chartForm.startDate, { label: 'label.report.date.init'|trans, attr: { class: 'datepicker' } }) }}
 
-                        {{ form_row(chartForm.endDate, { label: 'Data final', attr: { class: 'datepicker' } }) }}
+                        {{ form_row(chartForm.endDate, { label: 'label.report.date.end'|trans, attr: { class: 'datepicker' } }) }}
                         
                         <button type="submit" class="btn btn-primary">
-                            {% trans %}Gerar gráfico{% endtrans %}
+                            {{ 'button.report.generate.graphic'|trans }}
                         </button>
                     </div>
                     <div class="col-lg-8 col-md-8 ml-auto">
@@ -55,18 +55,18 @@
         <div id="tab-relatorios" class="tab-pane">
             {{ form_start(reportForm, { attr: { 'onsubmit': '' } }) }}
             
-                {{ form_row(reportForm.report, { label: 'Relatório', attr: { 'onchange': 'App.Estatisticas.options(\'#tab-relatorios\')' } }) }}
+                {{ form_row(reportForm.report, { label: 'label.report'|trans, attr: { 'onchange': 'App.Estatisticas.options(\'#tab-relatorios\')' } }) }}
 
                 <div class="option date date-range" style="display:none">
-                    {{ form_row(reportForm.startDate, { label: 'Data inicial', attr: { class: 'datepicker' } }) }}
+                    {{ form_row(reportForm.startDate, { label: 'label.report.date.init'|trans, attr: { class: 'datepicker' } }) }}
                 </div>
 
                 <div class="option date date-range" style="display:none">
-                    {{ form_row(reportForm.endDate, { label: 'Data final', attr: { class: 'datepicker' } }) }}
+                    {{ form_row(reportForm.endDate, { label: 'label.report.date.end'|trans, attr: { class: 'datepicker' } }) }}
                 </div>
                 
                 <button type="submit" class="btn btn-primary">
-                    {% trans %}Gerar relatório{% endtrans %}
+                    {{ 'button.report.generate.report'|trans }}
                 </button>
             {{ form_end(chartForm) }}
         </div>
@@ -83,12 +83,12 @@
     {{ parent() }}
     <script type="text/javascript" src="{{ asset('bundles/novosgareports/js/Chart.bundle.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('bundles/novosgareports/js/bootstrap-datepicker.min.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('bundles/novosgareports/js/bootstrap-datepicker.pt-BR.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/novosgareports/js/bootstrap-datepicker.' ~ locale[0:2]  ~ '.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('bundles/novosgareports/js/script.js') }}"></script>
     <script type="text/javascript">
         $(".datepicker" ).datepicker({
-            language: 'pt-BR',
-            format: '{% trans %}dd/mm/yyyy{% endtrans %}'
+            language: '{{ locale[0:2] }}',
+            format: '{{ "datepicker.date.format"| trans }}'
         });
     </script>
 {% endblock %}

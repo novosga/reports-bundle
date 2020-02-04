@@ -3,8 +3,8 @@
 <table class="table table-bordered">
     <thead class="thead-light">
         <tr>
-            <th>{% trans %}Serviço{% endtrans %}</th>
-            <th>{% trans %}Situação{% endtrans %}</th>
+            <th>{% trans %}report.service{% endtrans %}</th>
+            <th>{% trans %}report.status{% endtrans %}</th>
         </tr>
     </thead>
     <tbody>
@@ -13,9 +13,9 @@
                 <td class="strong">{{ servico.nome }}</td>
                 <td class="w100 center">
                     {% if servico.ativo %}
-                        <span class="status-active">{% trans %}Ativo{% endtrans %}</span>
+                        <span class="status-active">{% trans %}report.subservice.enabled{% endtrans %}</span>
                     {% else %}
-                        <span class="status-inactive">{% trans %}Inativo{% endtrans %}</span>
+                        <span class="status-inactive">{% trans %}report.subservice.disabled{% endtrans %}</span>
                     {% endif %}
                 </td>
             </tr>
@@ -25,8 +25,8 @@
                         <table class="table table-bordered table-striped subservicos">
                             <thead>
                                 <tr>
-                                    <th>{% trans %}Subserviço{% endtrans %}</th>
-                                    <th>{% trans %}Situação{% endtrans %}</th>
+                                    <th>{% trans %}report.subservice{% endtrans %}</th>
+                                    <th>{% trans %}report.status{% endtrans %}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -35,9 +35,9 @@
                                     <td class="nome">{{ subServico.nome }}</td>
                                     <td class="w100 center">
                                         {% if subServico.ativo %}
-                                            <span class="status-active">{% trans %}Ativo{% endtrans %}</span>
+                                            <span class="status-active">{% trans %}report.subservice.enabled{% endtrans %}</span>
                                         {% else %}
-                                            <span class="status-inactive">{% trans %}Inativo{% endtrans %}</span>
+                                            <span class="status-inactive">{% trans %}report.subservice.disabled{% endtrans %}</span>
                                         {% endif %}
                                     </td>
                                 </tr>

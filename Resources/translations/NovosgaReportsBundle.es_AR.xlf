@@ -4,98 +4,291 @@
       <trans-unit id="0">
         <source>module.name</source>
         <target>Informes</target>
-        
       </trans-unit>
       <trans-unit id="1">
         <source>title</source>
         <target>Informes</target>
-        
       </trans-unit>
       <trans-unit id="2">
         <source>subtitle</source>
         <target>Informes y gráficos del sistema.</target>
-        
       </trans-unit>
       <trans-unit id="3">
         <source>label.wait_time</source>
         <target>Tiempo de Espera</target>
-        
       </trans-unit>
       <trans-unit id="4">
         <source>label.dislocation_time</source>
         <target>Tiempo de desplazamiento</target>
-        
       </trans-unit>
       <trans-unit id="5">
         <source>label.servicing_time</source>
         <target>Tiempo de atención</target>
-        
       </trans-unit>
       <trans-unit id="6">
         <source>label.total_time</source>
         <target>Tiempo Total</target>
-        
       </trans-unit>
       <trans-unit id="7">
         <source>chart.servicing_by_status</source>
         <target>Atención por estado</target>
-        
       </trans-unit>
       <trans-unit id="8">
         <source>chart.servicing_by_service</source>
         <target>Atención por servicio</target>
-        
       </trans-unit>
       <trans-unit id="9">
         <source>chart.avg_servicing_time</source>
         <target>Tiempo medio de atención</target>
-        
       </trans-unit>
       <trans-unit id="10">
         <source>report.services_available_global</source>
-        <target>Servicios Disponibles - Global</target>
-        
+        <target>Servicios disponibles - Global</target>
       </trans-unit>
       <trans-unit id="11">
         <source>report.services_available_unity</source>
-        <target>Servicios Disponibles - Unidad</target>
-        
+        <target>Servicios disponibles - Unidad</target>
       </trans-unit>
       <trans-unit id="12">
         <source>report.services_performed</source>
         <target>Servicios realizados</target>
-        
       </trans-unit>
       <trans-unit id="13">
         <source>report.finished_servicing</source>
-        <target>Atenciones concluidas</target>
-        
+        <target>Atenciones finalizadas</target>
       </trans-unit>
       <trans-unit id="14">
         <source>report.servicing_all_status</source>
         <target>Atenciones en todos los estados</target>
-        
       </trans-unit>
       <trans-unit id="15">
         <source>report.avg_time_servicing</source>
         <target>Tiempos medios por operador</target>
-        
       </trans-unit>
       <trans-unit id="16">
         <source>report.lotations</source>
-        <target>Dotaciones</target>
-        
+        <target>Usuarios</target>
       </trans-unit>
       <trans-unit id="17">
         <source>report.roles</source>
         <target>Perfiles</target>
-        
       </trans-unit>
       <trans-unit id="18">
         <source>label.ticket</source>
         <target>Turno</target>
-        
       </trans-unit>
+      <trans-unit id="19">
+        <source>label.graphics</source>
+        <target>Gráficos</target>
+      </trans-unit>
+      <trans-unit id="20">
+        <source>label.reports</source>
+        <target>Informes</target>
+      </trans-unit>
+      <trans-unit id="21">
+        <source>label.graphic</source>
+        <target>Gráfico</target>
+      </trans-unit>
+      <trans-unit id="22">
+        <source>label.report.date.init</source>
+        <target>Fecha inicial</target>
+      </trans-unit>
+      <trans-unit id="23">
+        <source>label.report.date.end</source>
+        <target>Fecha final</target>
+      </trans-unit>
+      <trans-unit id="24">
+        <source>button.report.generate.graphic</source>
+        <target>Generar gráfico</target>
+      </trans-unit>
+      <trans-unit id="25">
+        <source>label.report</source>
+        <target>Informe</target>
+      </trans-unit>
+      <trans-unit id="26">
+        <source>button.report.generate.report</source>
+        <target>Generar informe</target>
+      </trans-unit>
+      <trans-unit id="27">
+        <source>datepicker.date.format</source>
+        <target>dd/mm/yyyy</target>
+      </trans-unit>
+      <trans-unit id="28">
+        <source>report.print</source>
+        <target>Imprimir</target>
+      </trans-unit>
+      <trans-unit id="29">
+        <source>report.services</source>
+        <target>Servicios</target>
+      </trans-unit>
+      <trans-unit id="30">
+        <source>report.status</source>
+        <target>Estado</target>
+      </trans-unit>
+      <trans-unit id="31">
+        <source>report.subservice</source>
+        <target>Subservicio</target>
+      </trans-unit>
+      <trans-unit id="32">
+        <source>report.subservice.enabled</source>
+        <target>Activo</target>
+      </trans-unit>
+      <trans-unit id="33">
+        <source>report.subservice.disabled</source>
+        <target>Inactivo</target>
+      </trans-unit>
+      <trans-unit id="34">
+        <source>report.service.prefix</source>
+        <target>Prefijo</target>
+      </trans-unit>
+
+      <trans-unit id="35">
+        <source>report.service</source>
+        <target>Servicio</target>
+      </trans-unit>
+      <trans-unit id="36">
+        <source>report.total</source>
+        <target>Total</target>
+      </trans-unit>
+      <trans-unit id="37">
+        <source>report.period</source>
+        <target>Período: </target>
+      </trans-unit>
+      <trans-unit id="38">
+        <source>report.detail.date</source>
+        <target>Fecha</target>
+      </trans-unit>
+      <trans-unit id="39">
+        <source>report.detail.call</source>
+        <target>Llamada</target>
+      </trans-unit>
+      <trans-unit id="40">
+        <source>report.detail.start</source>
+        <target>Inicio</target>
+      </trans-unit>
+      <trans-unit id="41">
+        <source>report.detail.end</source>
+        <target>Fin</target>
+      </trans-unit>
+      <trans-unit id="42">
+        <source>report.detail.attendance_time</source>
+        <target>Duración</target>
+      </trans-unit>
+      <trans-unit id="43">
+        <source>report.detail.stay_time</source>
+        <target>Permanencia</target>
+      </trans-unit>
+      <trans-unit id="44">
+        <source>report.detail.service</source>
+        <target>Servicio Seleccionado</target>
+      </trans-unit>
+      <trans-unit id="45">
+        <source>report.detail.attendant</source>
+        <target>Atendido por</target>
+      </trans-unit>
+      <trans-unit id="46">
+        <source>report.detail.comment</source>
+        <target>Observaciones</target>
+      </trans-unit>
+      <trans-unit id="47">
+        <source>report.detail.services</source>
+        <target>Servicios realizados</target>
+      </trans-unit>
+      <trans-unit id="48">
+        <source>report.detail.status</source>
+        <target>Estado</target>
+      </trans-unit>
+
+      <trans-unit id="49">
+        <source>user.id</source>
+        <target>Usuario</target>
+      </trans-unit>
+
+      <trans-unit id="50">
+        <source>user.name</source>
+        <target>Nombre</target>
+      </trans-unit>
+
+      <trans-unit id="51">
+        <source>user.profile</source>
+        <target>Perfil</target>
+      </trans-unit>
+
+      <trans-unit id="52">
+        <source>report.detail.call.text</source>
+        <target>Hora de llamada</target>
+      </trans-unit>
+
+      <trans-unit id="53">
+        <source>report.detail.start.text</source>
+        <target>Hora inicio de atención</target>
+      </trans-unit>
+
+      <trans-unit id="54">
+        <source>report.detail.end.text</source>
+        <target>Hora fin de atención</target>
+      </trans-unit>
+
+      <trans-unit id="55">
+        <source>report.detail.service.text</source>
+        <target>Servicio elegido en pantalla - Serviço escolhido na triagem</target>
+      </trans-unit>
+
+      <trans-unit id="56">
+        <source>report.modules</source>
+        <target>Módulos</target>
+      </trans-unit>
+
+      <trans-unit id="57">
+        <source>report.attendances</source>
+        <target>Atenciones</target>
+      </trans-unit>
+
+      <trans-unit id="58">
+        <source>report.awt</source>
+        <target>TME</target>
+      </trans-unit>
+
+      <trans-unit id="59">
+        <source>report.awt.text</source>
+        <target>Tiempo medio de espera</target>
+      </trans-unit>
+
+      <trans-unit id="60">
+        <source>report.att</source>
+        <target>TMD</target>
+      </trans-unit>
+
+      <trans-unit id="61">
+        <source>report.att.text</source>
+        <target>Tiempo medio de desplazamiento</target>
+      </trans-unit>
+
+      <trans-unit id="62">
+        <source>report.ast</source>
+        <target>TMA</target>
+      </trans-unit>
+
+      <trans-unit id="63">
+        <source>report.ast.text</source>
+        <target>Tiempo medio de atención</target>
+      </trans-unit>
+
+       <trans-unit id="64">
+        <source>report.legend</source>
+        <target>Leyenda</target>
+      </trans-unit>
+
+       <trans-unit id="65">
+        <source>report.detail.customer</source>
+        <target>Cliente</target>
+      </trans-unit>
+
+      <trans-unit id="66">
+        <source>report.select.placeholder</source>
+        <target>Seleccione</target>
+      </trans-unit>
+
     </body>
   </file>
 </xliff>

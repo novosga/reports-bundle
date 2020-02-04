@@ -2,13 +2,13 @@
 
 <div class="header">
     <h2>{{ relatorio.dados.unidade }}</h2>
-    <p>{% trans with {'%dataInicial%': dataInicial, '%dataFinal%': dataFinal} from "app" %}Período de %dataInicial% a %dataFinal%{% endtrans %}</p>
+    <p>{% trans %} report.period {% endtrans %} {{ dataInicial }} - {{ dataFinal }}</p>
 </div>
 <table class="table table-bordered table-striped">
     <thead class="thead-light">
         <tr>
-            <th>{% trans %}Serviço{% endtrans %}</th>
-            <th>{% trans %}Total{% endtrans %}</th>
+            <th>{% trans %}report.service{% endtrans %}</th>
+            <th>{% trans %}report.total{% endtrans %}</th>
         </tr>
     </thead>
     <tbody>
@@ -25,7 +25,7 @@
         <tr>
             <td></td>
             <td>
-                <strong>Total: {{ total }}</strong>
+                <strong>{{ 'report.total' | trans}} {{ total }}</strong>
             </td>
         </tr>
     </tfoot>
