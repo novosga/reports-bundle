@@ -22,7 +22,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints\NotNull;
 
 class ChartType extends AbstractType
@@ -68,6 +68,7 @@ class ChartType extends AbstractType
             ->add('startDate', DateType::class, [
                 'widget' => 'single_text',
                 'format' => 'dd/MM/yyyy',
+                'html5' => false,
                 'constraints' => [
                     new NotNull(),
                 ],
@@ -76,6 +77,7 @@ class ChartType extends AbstractType
             ->add('endDate', DateType::class, [
                 'widget' => 'single_text',
                 'format' => 'dd/MM/yyyy',
+                'html5' => false,
                 'constraints' => [
                     new NotNull(),
                 ],
@@ -103,6 +105,6 @@ class ChartType extends AbstractType
     
     public function getBlockPrefix()
     {
-        return null;
+        return '';
     }
 }

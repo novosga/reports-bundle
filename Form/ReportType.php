@@ -22,7 +22,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints\NotNull;
 
 class ReportType extends AbstractType
@@ -83,11 +83,13 @@ class ReportType extends AbstractType
             ->add('startDate', DateType::class, [
                 'widget' => 'single_text',
                 'format' => 'dd/MM/yyyy',
+                'html5' => false,
                 'data' => $yesterday,
             ])
             ->add('endDate', DateType::class, [
                 'widget' => 'single_text',
                 'format' => 'dd/MM/yyyy',
+                'html5' => false,
                 'data' => $today,
             ])
             ->add('usuario', EntityType::class, [
@@ -112,6 +114,6 @@ class ReportType extends AbstractType
     
     public function getBlockPrefix()
     {
-        return null;
+        return '';
     }
 }
