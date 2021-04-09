@@ -270,7 +270,7 @@ class DefaultController extends AbstractController
 
         if ($usuario) {
             $qb
-                ->andWhere('e.usuario = :usuario')
+                ->andWhere('a.usuario = :usuario')
                 ->setParameter('usuario', $usuario);
         }
 
@@ -321,7 +321,7 @@ class DefaultController extends AbstractController
            
         if ($usuario) {
             $qb
-                ->andWhere('e.usuario = :usuario')
+                ->andWhere('a.usuario = :usuario')
                 ->setParameter('usuario', $usuario);
         }
 
@@ -414,7 +414,7 @@ class DefaultController extends AbstractController
             ->setParameter('dataInicial', $dataInicial)
             ->setParameter('dataFinal', $dataFinal)
             ->setParameter('unidade', $unidade)
-            ->setMaxResult(self::MAX_RESULTS);
+            ->setMaxResults(self::MAX_RESULTS);
            
         if ($usuario) {
             $qb
