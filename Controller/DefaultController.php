@@ -210,7 +210,7 @@ class DefaultController extends AbstractController
         $usuario
     ) {
         $dados = [];
-        $query = $this
+        $qb = $this
             ->getDoctrine()
             ->getManager()
             ->createQueryBuilder()
@@ -220,14 +220,17 @@ class DefaultController extends AbstractController
             ->andWhere('e.dataChegada <= :fim')
             ->andWhere('e.unidade = :unidade')
             ->andWhere('e.status = :status')
-            ->andWhere('(:usuario IS NULL OR e.usuario = :usuario)')
-            ->setParameters([
-                'inicio'  => $dataInicial,
-                'fim'     => $dataFinal,
-                'unidade' => $unidade->getId(),
-                'usuario' => $usuario,
-            ])
-            ->getQuery();
+            ->setParameter('inicio', $dataInicial)
+            ->setParameter('fim', $dataFinal)
+            ->setParameter('unidade', $unidade->getId());
+
+        if ($usuario) {
+            $qb
+                ->andWhere('e.usuario = :usuario')
+                ->setParameter('usuario', $usuario);
+        }
+
+        $query = $qb->getQuery();
         
         foreach ($situacoes as $k => $v) {
             $query->setParameter('status', $k);
@@ -244,7 +247,7 @@ class DefaultController extends AbstractController
         $usuario
     ) {
         $dados = [];
-        $rs = $this
+        $qb = $this
             ->getDoctrine()
             ->getManager()
             ->createQueryBuilder()
@@ -259,15 +262,19 @@ class DefaultController extends AbstractController
             ->andWhere('a.dataChegada >= :inicio')
             ->andWhere('a.dataChegada <= :fim')
             ->andWhere('a.unidade = :unidade')
-            ->andWhere('(:usuario IS NULL OR a.usuario = :usuario)')
             ->groupBy('s')
-            ->setParameters([
-                'status' => AtendimentoService::ATENDIMENTO_ENCERRADO,
-                'inicio'  => $dataInicial,
-                'fim'     => $dataFinal,
-                'unidade' => $unidade->getId(),
-                'usuario' => $usuario,
-            ])
+            ->setParameter('status', AtendimentoService::ATENDIMENTO_ENCERRADO)
+            ->setParameter('inicio', $dataInicial)
+            ->setParameter('fim', $dataFinal)
+            ->setParameter('unidade', $unidade->getId());
+
+        if ($usuario) {
+            $qb
+                ->andWhere('e.usuario = :usuario')
+                ->setParameter('usuario', $usuario);
+        }
+
+        $rs = $qb
             ->getQuery()
             ->getResult();
         
@@ -293,7 +300,7 @@ class DefaultController extends AbstractController
             'total'        => $translator->trans('label.total_time', [], self::DOMAIN),
         ];
         
-        $rs = $this
+        $qb = $this
             ->getDoctrine()
             ->getManager()
             ->createQueryBuilder()
@@ -308,16 +315,20 @@ class DefaultController extends AbstractController
             ->where('a.dataChegada >= :inicio')
             ->andWhere('a.dataChegada <= :fim')
             ->andWhere('a.unidade = :unidade')
-            ->andWhere('(:usuario IS NULL OR a.usuario = :usuario)')
-            ->setParameters([
-                'inicio'  => $dataInicial,
-                'fim'     => $dataFinal,
-                'unidade' => $unidade->getId(),
-                'usuario' => $usuario,
-            ])
+            ->setParameter('inicio', $dataInicial)
+            ->setParameter('fim', $dataFinal)
+            ->setParameter('unidade', $unidade->getId());
+           
+        if ($usuario) {
+            $qb
+                ->andWhere('e.usuario = :usuario')
+                ->setParameter('usuario', $usuario);
+        }
+
+        $rs = $qb
             ->getQuery()
             ->getResult();
-            
+
         foreach ($rs as $r) {
             foreach ($tempos as $k => $v) {
                 $dados[$v] = (int) $r[$k];
@@ -384,7 +395,7 @@ class DefaultController extends AbstractController
 
     private function servicosRealizados(DateTime $dataInicial, DateTime $dataFinal, $unidade, $usuario)
     {
-        $rs = $this
+        $qb = $this
             ->getDoctrine()
             ->getManager()
             ->createQueryBuilder()
@@ -398,16 +409,20 @@ class DefaultController extends AbstractController
             ->where('e.unidade = :unidade')
             ->andWhere('e.dataChegada >= :dataInicial')
             ->andWhere('e.dataChegada <= :dataFinal')
-            ->andWhere('(:usuario IS NULL OR e.usuario = :usuario)')
             ->groupBy('s')
             ->orderBy('s.nome', 'ASC')
-            ->setParameters([
-                'dataInicial' => $dataInicial,
-                'dataFinal'   => $dataFinal,
-                'unidade'     => $unidade,
-                'usuario'     => $usuario,
-            ])
-            ->setMaxResults(self::MAX_RESULTS)
+            ->setParameter('dataInicial', $dataInicial)
+            ->setParameter('dataFinal', $dataFinal)
+            ->setParameter('unidade', $unidade)
+            ->setMaxResult(self::MAX_RESULTS);
+           
+        if ($usuario) {
+            $qb
+                ->andWhere('e.usuario = :usuario')
+                ->setParameter('usuario', $usuario);
+        }
+
+        $rs = $qb
             ->getQuery()
             ->getResult();
         
@@ -422,7 +437,7 @@ class DefaultController extends AbstractController
 
     private function atendimentosConcluidos(DateTime $dataInicial, DateTime $dataFinal, $unidade, $usuario)
     {
-        $rs = $this
+        $qb = $this
             ->getDoctrine()
             ->getManager()
             ->createQueryBuilder()
@@ -432,22 +447,26 @@ class DefaultController extends AbstractController
             ->andWhere('e.status = :status')
             ->andWhere('e.dataChegada >= :dataInicial')
             ->andWhere('e.dataChegada <= :dataFinal')
-            ->andWhere('(:usuario IS NULL OR e.usuario = :usuario)')
             ->orderBy('e.dataChegada', 'ASC')
-            ->setParameters([
-                'status'      => AtendimentoService::ATENDIMENTO_ENCERRADO,
-                'dataInicial' => $dataInicial,
-                'dataFinal'   => $dataFinal,
-                'unidade'     => $unidade,
-                'usuario'     => $usuario,
-            ])
+            ->setParameter('status', AtendimentoService::ATENDIMENTO_ENCERRADO)
+            ->setParameter('dataInicial', $dataInicial)
+            ->setParameter('dataFinal', $dataFinal)
+            ->setParameter('unidade', $unidade)
+            ->setMaxResults(self::MAX_RESULTS);
+
+        if ($usuario) {
+            $qb
+                ->andWhere('e.usuario = :usuario')
+                ->setParameter('usuario', $usuario);
+        }
+
+        $rs = $qb
             ->getQuery()
-            ->setMaxResults(self::MAX_RESULTS)
             ->getResult();
         
         $dados = [
-            'unidade'      => $unidade->getNome(),
-            'usuario'      => $usuario,
+            'unidade' => $unidade->getNome(),
+            'usuario' => $usuario,
             'atendimentos' => $rs,
         ];
 
@@ -456,7 +475,7 @@ class DefaultController extends AbstractController
 
     private function atendimentosStatus(DateTime $dataInicial, DateTime $dataFinal, $unidade, $usuario)
     {
-        $rs = $this
+        $qb = $this
             ->getDoctrine()
             ->getManager()
             ->createQueryBuilder()
@@ -465,21 +484,25 @@ class DefaultController extends AbstractController
             ->where('e.unidade = :unidade')
             ->andWhere('e.dataChegada >= :dataInicial')
             ->andWhere('e.dataChegada <= :dataFinal')
-            ->andWhere('(:usuario IS NULL OR e.usuario = :usuario)')
             ->orderBy('e.dataChegada', 'ASC')
-            ->setParameters([
-                'dataInicial' => $dataInicial,
-                'dataFinal'   => $dataFinal,
-                'unidade'     => $unidade,
-                'usuario'     => $usuario,
-            ])
-            ->getQuery()
-            ->setMaxResults(self::MAX_RESULTS)
-            ->getResult();
+            ->setParameter('dataInicial', $dataInicial)
+            ->setParameter('dataFinal', $dataFinal)
+            ->setParameter('unidade', $unidade)
+            ->setMaxResults(self::MAX_RESULTS);
         
+        if ($usuario) {
+            $qb
+                ->andWhere('e.usuario = :usuario')
+                ->setParameter('usuario', $usuario);
+        }
+
+        $rs = $qb
+            ->getQuery()
+            ->getResult();
+
         $dados = [
-            'unidade'      => $unidade->getNome(),
-            'usuario'      => $usuario,
+            'unidade' => $unidade->getNome(),
+            'usuario' => $usuario,
             'atendimentos' => $rs,
         ];
 
@@ -509,9 +532,9 @@ class DefaultController extends AbstractController
             ->groupBy('u')
             ->orderBy('u.nome', 'ASC')
             ->setParameters([
-                'unidade'     => $unidade,
+                'unidade' => $unidade,
                 'dataInicial' => $dataInicial,
-                'dataFinal'   => $dataFinal,
+                'dataFinal' => $dataFinal,
             ])
             ->getQuery()
             ->setMaxResults(self::MAX_RESULTS)
@@ -548,9 +571,7 @@ class DefaultController extends AbstractController
             ->join('e.perfil', 'c')
             ->where('uni = :unidade')
             ->orderBy('usu.nome', 'ASC')
-            ->setParameters([
-                'unidade' => $unidade
-            ])
+            ->setParameter('unidade', $unidade)
             ->getQuery()
             ->setMaxResults(self::MAX_RESULTS)
             ->getResult();
@@ -561,7 +582,7 @@ class DefaultController extends AbstractController
         }
         
         $dados = [
-            'unidade'  => $unidade->getNome(),
+            'unidade' => $unidade->getNome(),
             'lotacoes' => $lotacoes,
             'servicos' => $servicos,
         ];
@@ -584,7 +605,7 @@ class DefaultController extends AbstractController
         
         foreach ($perfis as $perfil) {
             $dados[$perfil->getId()] = [
-                'perfil'     => $perfil->getNome(),
+                'perfil' => $perfil->getNome(),
                 'permissoes' => $perfil->getModulos(),
             ];
         }
