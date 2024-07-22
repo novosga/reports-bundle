@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the Novo SGA project.
  *
@@ -13,42 +15,37 @@ namespace Novosga\ReportsBundle\Form;
 
 use DateTime;
 use Doctrine\ORM\EntityRepository;
-use Novosga\Entity\Usuario;
-use Novosga\ReportsBundle\Controller\DefaultController;
+use App\Entity\Usuario;
 use Novosga\ReportsBundle\Helper\Grafico;
+use Novosga\ReportsBundle\NovosgaReportsBundle;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints\NotNull;
 
 class ChartType extends AbstractType
 {
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
-    
-    public function __construct(TranslatorInterface $translator)
-    {
-        $this->translator = $translator;
+    public function __construct(
+        private readonly TranslatorInterface $translator,
+    ) {
     }
-    
+
     /**
      * @param FormBuilderInterface $builder
      * @param array $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $today     = new DateTime('today');
+        $domain = NovosgaReportsBundle::getDomain();
+        $today = new DateTime('today');
         $yesterday = new DateTime('yesterday');
         
-        $chart1 = $this->translator->trans('chart.servicing_by_status', [], DefaultController::DOMAIN);
-        $chart2 = $this->translator->trans('chart.servicing_by_service', [], DefaultController::DOMAIN);
-        $chart3 = $this->translator->trans('chart.avg_servicing_time', [], DefaultController::DOMAIN);
+        $chart1 = $this->translator->trans('chart.servicing_by_status', [], $domain);
+        $chart2 = $this->translator->trans('chart.servicing_by_service', [], $domain);
+        $chart3 = $this->translator->trans('chart.avg_servicing_time', [], $domain);
         
         $builder
             ->add('chart', ChoiceType::class, [
@@ -95,14 +92,7 @@ class ChartType extends AbstractType
             ])
         ;
     }
-    
-    /**
-     * {@inheritdoc}
-     */
-    public function configureOptions(OptionsResolver $resolver)
-    {
-    }
-    
+
     public function getBlockPrefix()
     {
         return '';

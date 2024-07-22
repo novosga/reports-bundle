@@ -13,10 +13,13 @@ services:
     Novosga\ReportsBundle\Controller\:
         resource: '../../Controller'
         tags: ['controller.service_arguments']
-        
+
+    Novosga\ReportsBundle\Service\:
+        resource: '../../Service'
+
     Novosga\ReportsBundle\Form\:
         resource: '../../Form'
-        
+
     Novosga\ReportsBundle\Twig\:
         resource: '../../Twig'
         tags:

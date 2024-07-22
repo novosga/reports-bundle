@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the Novo SGA project.
  *
@@ -12,49 +14,44 @@
 namespace Novosga\ReportsBundle\Form;
 
 use DateTime;
-use Doctrine\ORM\EntityRepository;
-use Novosga\Entity\Usuario;
+use Novosga\Entity\UsuarioInterface;
 use Novosga\ReportsBundle\Helper\Relatorio;
-use Novosga\ReportsBundle\Controller\DefaultController;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Novosga\ReportsBundle\NovosgaReportsBundle;
+use Novosga\Repository\UsuarioRepositoryInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints\NotNull;
 
 class ReportType extends AbstractType
 {
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
-    
-    public function __construct(TranslatorInterface $translator)
-    {
-        $this->translator = $translator;
+    public function __construct(
+        private readonly UsuarioRepositoryInterface $usuarioRepository,
+        private readonly TranslatorInterface $translator,
+    ) {
     }
-    
+
     /**
      * @param FormBuilderInterface $builder
      * @param array $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $today     = new DateTime('today');
+        $domain = NovosgaReportsBundle::getDomain();
+        $today = new DateTime('today');
         $yesterday = new DateTime('yesterday');
         
-        $report1 = $this->translator->trans('report.services_available_global', [], DefaultController::DOMAIN);
-        $report2 = $this->translator->trans('report.services_available_unity', [], DefaultController::DOMAIN);
-        $report3 = $this->translator->trans('report.services_performed', [], DefaultController::DOMAIN);
-        $report4 = $this->translator->trans('report.finished_servicing', [], DefaultController::DOMAIN);
-        $report5 = $this->translator->trans('report.servicing_all_status', [], DefaultController::DOMAIN);
-        $report6 = $this->translator->trans('report.avg_time_servicing', [], DefaultController::DOMAIN);
-        $report7 = $this->translator->trans('report.lotations', [], DefaultController::DOMAIN);
-        $report8 = $this->translator->trans('report.roles', [], DefaultController::DOMAIN);
-        
+        $report1 = $this->translator->trans('report.services_available_global', [], $domain);
+        $report2 = $this->translator->trans('report.services_available_unity', [], $domain);
+        $report3 = $this->translator->trans('report.services_performed', [], $domain);
+        $report4 = $this->translator->trans('report.finished_servicing', [], $domain);
+        $report5 = $this->translator->trans('report.servicing_all_status', [], $domain);
+        $report6 = $this->translator->trans('report.avg_time_servicing', [], $domain);
+        $report7 = $this->translator->trans('report.lotations', [], $domain);
+        $report8 = $this->translator->trans('report.roles', [], $domain);
+
         $builder
             ->add('report', ChoiceType::class, [
                 'placeholder' => 'Selecione',
@@ -92,26 +89,15 @@ class ReportType extends AbstractType
                 'html5' => false,
                 'data' => $today,
             ])
-            ->add('usuario', EntityType::class, [
-                'class'         => Usuario::class,
+            ->add('usuario', ChoiceType::class, [
+                'choices'       => $this->usuarioRepository->findAll(),
+                'choice_label'  => fn (?UsuarioInterface $usuario) => $usuario?->getLogin(),
                 'placeholder'   => 'Todos',
                 'required'      => false,
-                'query_builder' => function (EntityRepository $repo) {
-                    return $repo
-                        ->createQueryBuilder('e')
-                        ->orderBy('e.nome', 'ASC');
-                },
             ])
         ;
     }
-    
-    /**
-     * {@inheritdoc}
-     */
-    public function configureOptions(OptionsResolver $resolver)
-    {
-    }
-    
+
     public function getBlockPrefix()
     {
         return '';
