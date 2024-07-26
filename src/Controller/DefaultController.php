@@ -13,19 +13,22 @@ declare(strict_types=1);
 
 namespace Novosga\ReportsBundle\Controller;
 
-use DateTime;
 use Exception;
 use Novosga\Entity\UnidadeInterface;
 use Novosga\Entity\UsuarioInterface;
 use Novosga\Http\Envelope;
+use Novosga\ReportsBundle\Dto\GenerateChartDto;
+use Novosga\ReportsBundle\Dto\GenerateReportDto;
 use Novosga\ReportsBundle\Form\ChartType;
 use Novosga\ReportsBundle\Form\ReportType;
+use Novosga\ReportsBundle\Service\ChartService;
 use Novosga\ReportsBundle\Service\ReportService;
 use Novosga\Service\AtendimentoServiceInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 
 /**
  *
@@ -37,14 +40,14 @@ class DefaultController extends AbstractController
     #[Route("/", name: "index", methods: ['GET'])]
     public function index(): Response
     {
-        $unidade    = $this->getUnidade();
-        $chartForm  = $this->createChartForm();
-        $reportForm = $this->createReportForm();
-        
+        $unidade = $this->getUnidade();
+        $chartForm = $this->createForm(ChartType::class);
+        $reportForm = $this->createForm(ReportType::class);
+
         return $this->render('@NovosgaReports/default/index.html.twig', [
-            'unidade'    => $unidade,
-            'chartForm'  => $chartForm->createView(),
-            'reportForm' => $reportForm->createView(),
+            'unidade' => $unidade,
+            'chartForm' => $chartForm,
+            'reportForm' => $reportForm,
         ]);
     }
 
@@ -52,45 +55,51 @@ class DefaultController extends AbstractController
     public function chart(
         Request $request,
         AtendimentoServiceInterface $atendimentoService,
-        ReportService $reportService,
+        ChartService $chartService,
     ): Response {
         $envelope = new Envelope();
-        
+
+        $data = new GenerateChartDto();
         $form = $this
-            ->createChartForm()
+            ->createForm(ChartType::class, $data)
             ->handleRequest($request);
-        
+
         if (!$form->isSubmitted() || !$form->isValid()) {
             throw new Exception('Formulário inválido');
         }
-        
-        $grafico = $form->get('chart')->getData();
-        $dataInicial = $form->get('startDate')->getData();
-        $dataFinal = $form->get('endDate')->getData();
-        $usuario = $form->get('usuario')->getData();
-        $unidade = $this->getUnidade();
-        
-        $dataInicial->setTime(0, 0, 0);
-        $dataFinal->setTime(23, 59, 59);
 
-        switch ($grafico->getId()) {
+        $unidade = $this->getUnidade();
+
+        switch ($data->chart->id) {
             case 1:
-                $situacoes = $atendimentoService->getSituacoes();
-                $dados = $reportService->getTotalAtendimentosStatus($situacoes, $dataInicial, $dataFinal, $unidade, $usuario);
-                $grafico->setLegendas($situacoes);
-                $grafico->setDados($dados);
+                $data->chart->legendas = $atendimentoService->getSituacoes();
+                $data->chart->dados = $chartService->getTotalAtendimentosStatus(
+                    $data->chart->legendas,
+                    $data->startDate,
+                    $data->endDate,
+                    $unidade,
+                    $data->usuario
+                );
                 break;
             case 2:
-                $dados = $reportService->getTotalAtendimentosServico($dataInicial, $dataFinal, $unidade, $usuario);
-                $grafico->setDados($dados);
+                $data->chart->dados = $chartService->getTotalAtendimentosServico(
+                    $data->startDate,
+                    $data->endDate,
+                    $unidade,
+                    $data->usuario
+                );
                 break;
             case 3:
-                $dados = $reportService->getTempoMedioAtendimentos($dataInicial, $dataFinal, $unidade, $usuario);
-                $grafico->setDados($dados);
+                $data->chart->dados = $chartService->getTempoMedioAtendimentos(
+                    $data->startDate,
+                    $data->endDate,
+                    $unidade,
+                    $data->usuario
+                );
                 break;
         }
-        
-        $data = $grafico->jsonSerialize();
+
+        $data = $data->chart->jsonSerialize();
         $envelope->setData($data);
 
         return $this->json($envelope);
@@ -100,75 +109,56 @@ class DefaultController extends AbstractController
     public function report(
         Request $request,
         ReportService $reportService,
+        #[MapQueryParameter] int $page = 1,
     ): Response {
+        $data = new GenerateReportDto();
         $form = $this
-            ->createReportForm()
+            ->createForm(ReportType::class, $data)
             ->handleRequest($request);
-        
+
         if (!$form->isSubmitted() || !$form->isValid()) {
             throw new Exception('Formulário inválido');
         }
-        
-        $relatorio   = $form->get('report')->getData();
-        $dataInicial = $form->get('startDate')->getData();
-        $dataFinal   = $form->get('endDate')->getData();
-        $usuario     = $form->get('usuario')->getData();
-        $unidade     = $this->getUnidade();
-        
-        if (!$dataInicial) {
-            $dataInicial = new DateTime();
-        }
-        
-        if (!$dataFinal) {
-            $dataFinal = new DateTime();
-        }
-        
-        $dataInicial->setTime(0, 0, 0);
-        $dataFinal->setTime(23, 59, 59);
-        
-        $dados = match ($relatorio->getId()) {
+
+        $unidade = $this->getUnidade();
+
+        $data->report->dados = match ($data->report->id) {
             1 => $reportService->getServicosDisponiveisGlobal(),
             2 => $reportService->getServicosDisponiveisUnidade($unidade),
-            3 => $reportService->getServicosRealizados($dataInicial, $dataFinal, $unidade, $usuario),
-            4 => $reportService->getAtendimentosConcluidos($dataInicial, $dataFinal, $unidade, $usuario),
-            5 => $reportService->getAtendimentosStatus($dataInicial, $dataFinal, $unidade, $usuario),
-            6 => $reportService->getTempoMedioAtendentes($dataInicial, $dataFinal, $unidade),
-            7 => $reportService->getLotacoes($unidade),
+            3 => $reportService->getServicosRealizados(
+                $data->startDate,
+                $data->endDate,
+                $unidade,
+                $data->usuario,
+                $page
+            ),
+            4 => $reportService->getAtendimentosConcluidos(
+                $data->startDate,
+                $data->endDate,
+                $unidade,
+                $data->usuario,
+                $page
+            ),
+            5 => $reportService->getAtendimentosStatus(
+                $data->startDate,
+                $data->endDate,
+                $unidade,
+                $data->usuario,
+                $page
+            ),
+            6 => $reportService->getTempoMedioAtendentes($data->startDate, $data->endDate, $unidade, $page),
+            7 => $reportService->getLotacoes($unidade, $page),
             8 => $reportService->getPerfis(),
             default => []
         };
 
-        $relatorio->setDados($dados);
-        
         return $this->render("@NovosgaReports/default/relatorio.html.twig", [
-            'dataInicial' => $dataInicial->format('d/m/Y'),
-            'dataFinal'   => $dataFinal->format('d/m/Y'),
-            'relatorio'   => $relatorio,
-            'page'        => "@NovosgaReports/relatorios/{$relatorio->getArquivo()}.html.twig",
+            'dataInicial' => $data->startDate,
+            'dataFinal' => $data->endDate,
+            'relatorio' => $data->report,
+            'page' => $page,
+            'template' => "@NovosgaReports/relatorios/{$data->report->arquivo}.html.twig",
         ]);
-    }
-    
-    private function createChartForm()
-    {
-        $form = $this->createForm(ChartType::class, null, [
-            'csrf_protection' => false,
-        ]);
-        
-        return $form;
-    }
-    
-    private function createReportForm()
-    {
-        $form = $this->createForm(ReportType::class, null, [
-            'method' => 'get',
-            'action' => $this->generateUrl('novosga_reports_report'),
-            'attr' => [
-                'target' => '_blank'
-            ],
-            'csrf_protection' => false,
-        ]);
-        
-        return $form;
     }
 
     private function getUnidade(): UnidadeInterface

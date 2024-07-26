@@ -5,25 +5,29 @@
 var App = App || {};
 
 App.Estatisticas = {
-    
-    options: function (group) {
-        var elems = $(group + ' .option');
-        elems.find(':input').prop('disabled', true);
-        elems.hide();
+    options(group) {
+        const elems = [...document.querySelectorAll(group + ' .option')];
+        elems.forEach(elem => {
+            const items = [...elem.querySelectorAll('input,select,textarea')]
+            items.forEach(i => i.disabled = true);
+            elem.style.display = 'none';
+        });
         // habilitando as opções do gráfico/relatório selecionado
-        var param = $(group + ' option:selected').data('opcoes');
+        const selected = document.querySelector(group + ' option:checked');
+        const param = selected.dataset.opcoes;
         if (param != '') {
-            var opcoes = param.split(',');
+            const opcoes = param.split(',');
             for (var i = 0; i < opcoes.length; i++) {
-                elems = $(group + ' .' + opcoes[i]);
-                elems.find(':input').prop('disabled', false);
-                elems.show();
+                const opcaoDivs = [...document.querySelectorAll(group + ' .' + opcoes[i])];
+                opcaoDivs.forEach(div => {
+                    const opcaoInputs = [...div.querySelectorAll('input,select,textarea')]
+                    opcaoInputs.forEach(i => i.disabled = false);
+                    div.style.display = 'block';
+                });
             }
         }
     },
-    
-    Grafico: {
-        
+    Grafico: {  
         backgroundColors: [
             'rgba(255, 99, 132, 0.2)',
             'rgba(54, 162, 235, 0.2)',
@@ -32,44 +36,41 @@ App.Estatisticas = {
             'rgba(153, 102, 255, 0.2)',
             'rgba(255, 159, 64, 0.2)'
         ],
-        
-        gerar: function (form) {
-            $.ajax({
-                type: 'POST',
-                url: App.url('/novosga.reports/chart'),
-                data: $(form).serialize(),
-                success: function (response) {
-                    $('#chart-result')
-                        .html('')
-                        .append('<canvas id="chart-result-canvas" width="400"></canvas>');
-
-                    var prop = {
-                        id: 'chart-result-canvas',
-                        dados: response.data.dados,
-                        legendas: response.data.legendas,
-                        titulo: response.data.titulo
-                    };
-                    switch (response.data.tipo) {
-                        case 'pie':
-                            App.Estatisticas.Grafico.pie(prop);
-                        break;
-                        case 'bar':
-                            App.Estatisticas.Grafico.bar(prop);
-                        break;
-                    }
-                }
+        async gerar(form) {
+            const resp = await fetch(App.url('/novosga.reports/chart'), {
+                method: 'post',
+                body: new FormData(form),
             });
+            const json = await resp.json();
+            const data = json.data;
+
+            const frame = document.getElementById('chart-result');
+            frame.innerHTML = '<canvas id="chart-result-canvas" width="400"></canvas>';
+
+            var prop = {
+                id: 'chart-result-canvas',
+                dados: data.dados,
+                legendas: data.legendas,
+                titulo: data.titulo
+            };
+            switch (data.tipo) {
+                case 'pie':
+                    App.Estatisticas.Grafico.pie(prop);
+                break;
+                case 'bar':
+                    App.Estatisticas.Grafico.bar(prop);
+                break;
+            }
         },
         
-        pie: function (prop) {
-            var labels = [],
-                data   = [],
-                colors = [],
-                ctx    = document.getElementById(prop.id);
+        pie(prop) {
+            const labels = [];
+            const data = [];
+            const colors = [];
+            const ctx = document.getElementById(prop.id);
             
-            for (var i in prop.dados) {
-                var legenda = prop.legendas && prop.legendas[i] ? prop.legendas[i] : i;
-                
+            for (let i in prop.dados) {
+                const legenda = prop.legendas && prop.legendas[i] ? prop.legendas[i] : i;
                 colors.push(this.backgroundColors[data.length % this.backgroundColors.length]);
                 data.push(parseInt(prop.dados[i]));
                 labels.push(legenda);
@@ -78,24 +79,25 @@ App.Estatisticas = {
             new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    datasets: [{
-                        data: data,
-                        backgroundColor: colors,
-                    }],
+                    datasets: [
+                        {
+                            data: data,
+                            backgroundColor: colors,
+                        }
+                    ],
                     labels: labels,
                 }
             });
         },
-        
-        bar: function (prop) {
-            var labels = [],
-                data   = [],
-                colors = [],
-                ctx    = document.getElementById(prop.id);
-            
-            for (var i in prop.dados) {
-                var legenda = prop.legendas && prop.legendas[i] ? prop.legendas[i] : i;
-                
+
+        bar(prop) {
+            const labels = [];
+            const data = [];
+            const colors = [];
+            const ctx = document.getElementById(prop.id);
+
+            for (let i in prop.dados) {
+                const legenda = prop.legendas && prop.legendas[i] ? prop.legendas[i] : i;
                 colors.push(this.backgroundColors[data.length % this.backgroundColors.length]);
                 data.push(parseInt(prop.dados[i]));
                 labels.push(legenda);
@@ -135,7 +137,7 @@ App.Estatisticas = {
         }
     },
     
-    secToTime: function (seconds) {
+    secToTime(seconds) {
         var hours = Math.floor(seconds / 3600);
         var mins = Math.floor((seconds - (hours * 3600)) / 60);
         mins = mins < 10 ? '0' + mins : mins;
@@ -144,7 +146,7 @@ App.Estatisticas = {
         return (hours > 0 ? hours + ":" : '') + mins + ":" + secs;
     },
     
-    dateToSql: function (localeDate) {
+    dateToSql(localeDate) {
         if (localeDate && localeDate != "") {
             var datetime = localeDate.split(' ');
             var date = datetime[0].split('/');
@@ -171,6 +173,5 @@ App.Estatisticas = {
             return sqlDate.join('-') + time;
         }
         return "";
-    },
-    
+    },  
 };

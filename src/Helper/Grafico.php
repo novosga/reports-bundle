@@ -13,39 +13,42 @@ declare(strict_types=1);
 
 namespace Novosga\ReportsBundle\Helper;
 
+use JsonSerializable;
+
 /**
  * Grafico.
  *
  * @author Rogerio Lino <rogeriolino@gmail.com>
  */
-class Grafico extends Relatorio
+final class Grafico implements JsonSerializable
 {
-    private $legendas = [];
-
-    public function __construct($id, $titulo, $tipo, $opcoes = '')
-    {
-        parent::__construct($id, $titulo, $tipo, $opcoes);
+    /**
+     * @param array<string,string> $legendas
+     * @param array<string,mixed> $dados
+     */
+    public function __construct(
+        public readonly int $id,
+        public readonly string $titulo,
+        public readonly string $tipo,
+        public readonly string $opcoes = '',
+        public array $legendas = [],
+        public array $dados = [],
+    ) {
     }
 
-    public function getLegendas()
+    public function __toString()
     {
-        return $this->legendas;
+        return $this->titulo;
     }
 
-    public function setLegendas($legendas)
-    {
-        $this->legendas = $legendas;
-        
-        return $this;
-    }
-
-    public function jsonSerialize()
+    /** @return array<string,mixed> */
+    public function jsonSerialize(): array
     {
         return [
-            'id'       => $this->id,
-            'tipo'     => $this->arquivo,
-            'titulo'   => $this->titulo,
-            'dados'    => $this->dados,
+            'id' => $this->id,
+            'tipo' => $this->tipo,
+            'titulo' => $this->titulo,
+            'dados' => $this->dados,
             'legendas' => $this->legendas,
         ];
     }

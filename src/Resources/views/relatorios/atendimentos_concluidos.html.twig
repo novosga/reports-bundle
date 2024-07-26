@@ -5,7 +5,7 @@
     {% if relatorio.dados.usuario %}
         <h4>{{ relatorio.dados.usuario.nomeCompleto }}</h4>
     {% endif %}
-    <p>{% trans with {'%dataInicial%': dataInicial, '%dataFinal%': dataFinal} from "app" %}Período de %dataInicial% a %dataFinal%{% endtrans %}</p>
+    <p>{% trans with {'%dataInicial%': dataInicial|date('d/m/Y'), '%dataFinal%': dataFinal|date('d/m/Y')} from "app" %}Período de %dataInicial% a %dataFinal%{% endtrans %}</p>
 </div>
 <table class="table table-bordered table-striped">
     <thead class="thead-light">

@@ -15,6 +15,7 @@ namespace Novosga\ReportsBundle\Form;
 
 use DateTime;
 use Novosga\Entity\UsuarioInterface;
+use Novosga\ReportsBundle\Dto\GenerateReportDto;
 use Novosga\ReportsBundle\Helper\Relatorio;
 use Novosga\ReportsBundle\NovosgaReportsBundle;
 use Novosga\Repository\UsuarioRepositoryInterface;
@@ -22,6 +23,8 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints\NotNull;
 
@@ -29,20 +32,17 @@ class ReportType extends AbstractType
 {
     public function __construct(
         private readonly UsuarioRepositoryInterface $usuarioRepository,
+        private readonly RouterInterface $router,
         private readonly TranslatorInterface $translator,
     ) {
     }
 
-    /**
-     * @param FormBuilderInterface $builder
-     * @param array $options
-     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $domain = NovosgaReportsBundle::getDomain();
         $today = new DateTime('today');
         $yesterday = new DateTime('yesterday');
-        
+
         $report1 = $this->translator->trans('report.services_available_global', [], $domain);
         $report2 = $this->translator->trans('report.services_available_unity', [], $domain);
         $report3 = $this->translator->trans('report.services_performed', [], $domain);
@@ -65,37 +65,44 @@ class ReportType extends AbstractType
                     new Relatorio(7, $report7, 'lotacoes', 'unidade'),
                     new Relatorio(8, $report8, 'perfis'),
                 ],
-                'choice_label' => function (Relatorio $item) {
-                    return $item->getTitulo();
-                },
-                'choice_attr' => function (Relatorio $item) {
-                    return [
-                        'data-opcoes' => $item->getOpcoes(),
-                    ];
-                },
+                'choice_label' => fn (?Relatorio $item) => $item?->titulo,
+                'choice_attr' => fn (?Relatorio $item) => [ 'data-opcoes' => $item?->opcoes ],
                 'constraints' => [
                     new NotNull(),
                 ]
             ])
             ->add('startDate', DateType::class, [
-                'widget' => 'single_text',
-                'format' => 'dd/MM/yyyy',
-                'html5' => false,
                 'data' => $yesterday,
+                'widget' => 'single_text',
+                'html5' => true,
             ])
             ->add('endDate', DateType::class, [
-                'widget' => 'single_text',
-                'format' => 'dd/MM/yyyy',
-                'html5' => false,
                 'data' => $today,
+                'widget' => 'single_text',
+                'html5' => true,
             ])
             ->add('usuario', ChoiceType::class, [
-                'choices'       => $this->usuarioRepository->findAll(),
+                'placeholder' => 'Todos',
+                'choices' => $this->usuarioRepository->findAll(),
                 'choice_label'  => fn (?UsuarioInterface $usuario) => $usuario?->getLogin(),
-                'placeholder'   => 'Todos',
-                'required'      => false,
+                'required' => false,
             ])
         ;
+    }
+
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver
+            ->setDefaults([
+                'class' => GenerateReportDto::class,
+                'method' => 'get',
+                'action' => $this->router->generate('novosga_reports_report'),
+                'attr' => [
+                    'target' => '_blank'
+                ],
+                'csrf_protection' => false,
+                'allow_extra_fields' => true,
+            ]);
     }
 
     public function getBlockPrefix()

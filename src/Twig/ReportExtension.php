@@ -2,6 +2,7 @@
 
 namespace Novosga\ReportsBundle\Twig;
 
+use DateTime;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 
@@ -12,20 +13,19 @@ use Twig\TwigFilter;
  */
 class ReportExtension extends AbstractExtension
 {
-    public function getFilters()
+    public function getFilters(): array
     {
-        return array(
+        return [
             new TwigFilter('secToDate', array($this, 'secToDateFilter')),
-        );
+        ];
     }
 
-    public function secToDateFilter($seconds)
+    public function secToDateFilter(int $seconds): DateTime
     {
-        $s  = (int) $seconds;
-        $dt = new \DateTime();
+        $dt = new DateTime();
         $dt->setTime(0, 0, 0);
-        $dt->add(new \DateInterval("PT{$s}S"));
-        
+        $dt->add(new \DateInterval("PT{$seconds}S"));
+
         return $dt;
     }
 }

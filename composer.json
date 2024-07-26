@@ -1,7 +1,7 @@
 {
     "name": "novosga/reports-bundle",
     "license": "MIT",
-    "type": "novosga-module",
+    "type": "symfony-bundle",
     "autoload": {
         "psr-4": { "Novosga\\ReportsBundle\\": "src/" }
     },

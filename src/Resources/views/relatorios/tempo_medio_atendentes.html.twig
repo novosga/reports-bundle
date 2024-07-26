@@ -2,7 +2,7 @@
 
 <div class="header">
     <h2>{{ relatorio.dados.unidade }}</h2>
-    <p>{% trans with {'%dataInicial%': dataInicial, '%dataFinal%': dataFinal} from "app" %}Período de %dataInicial% a %dataFinal%{% endtrans %}</p>
+    <p>{% trans with {'%dataInicial%': dataInicial|date('d/m/Y'), '%dataFinal%': dataFinal|date('d/m/Y')} from "app" %}Período de %dataInicial% a %dataFinal%{% endtrans %}</p>
 </div>
 
 {% set total = 0 %}

@@ -2,13 +2,20 @@
 
 declare(strict_types=1);
 
+/*
+ * This file is part of the Novo SGA project.
+ *
+ * (c) Rogerio Lino <rogeriolino@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Novosga\ReportsBundle\Service;
 
-use DateTime;
-use Doctrine\ORM\EntityManagerInterface;
+use DateTimeInterface;
 use Novosga\Entity\UnidadeInterface;
 use Novosga\Entity\UsuarioInterface;
-use Novosga\ReportsBundle\NovosgaReportsBundle;
 use Novosga\Repository\LotacaoRepositoryInterface;
 use Novosga\Repository\PerfilRepositoryInterface;
 use Novosga\Repository\ServicoRepositoryInterface;
@@ -17,15 +24,17 @@ use Novosga\Repository\ViewAtendimentoCodificadoRepositoryInterface;
 use Novosga\Repository\ViewAtendimentoRepositoryInterface;
 use Novosga\Service\AtendimentoServiceInterface;
 use Novosga\Service\UsuarioServiceInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * ReportService
+ *
+ * @author Rogerio Lino <rogeriolino@gmail.com>
+ */
 class ReportService
 {
     private const MAX_RESULTS = 1000;
 
     public function __construct(
-        private readonly EntityManagerInterface $em,
-        private readonly TranslatorInterface $translator,
         private readonly UsuarioServiceInterface $usuarioService,
         private readonly PerfilRepositoryInterface $perfilRepository,
         private readonly LotacaoRepositoryInterface $lotacaoRepository,
@@ -36,137 +45,7 @@ class ReportService
     ) {
     }
 
-    /** @param string[] $situacoes */
-    public function getTotalAtendimentosStatus(
-        array $situacoes,
-        DateTime $dataInicial,
-        DateTime $dataFinal,
-        UnidadeInterface $unidade,
-        UsuarioInterface|int|null $usuario,
-    ): array {
-        $dados = [];
-        $qb = $this
-            ->viewAtendimentoRepository
-            ->createQueryBuilder('e')
-            ->select('COUNT(e)')
-            ->where('e.dataChegada >= :inicio')
-            ->andWhere('e.dataChegada <= :fim')
-            ->andWhere('e.unidade = :unidade')
-            ->andWhere('e.status = :status')
-            ->setParameter('inicio', $dataInicial)
-            ->setParameter('fim', $dataFinal)
-            ->setParameter('unidade', $unidade->getId());
-
-        if ($usuario) {
-            $qb
-                ->andWhere('e.usuario = :usuario')
-                ->setParameter('usuario', $usuario);
-        }
-
-        $query = $qb->getQuery();
-        
-        foreach ($situacoes as $k => $v) {
-            $query->setParameter('status', $k);
-            $dados[$k] = (int) $query->getSingleScalarResult();
-        }
-
-        return $dados;
-    }
-
-    public function getTotalAtendimentosServico(
-        DateTime $dataInicial,
-        DateTime $dataFinal,
-        UnidadeInterface $unidade,
-        UsuarioInterface|int|null $usuario,
-    ): array {
-        $dados = [];
-        $qb = $this
-            ->viewAtendimentoRepository
-            ->createQueryBuilder('a')
-            ->select([
-                's.nome as servico',
-                'COUNT(a) as total',
-            ])
-            ->join('a.unidade', 'u')
-            ->join('a.servico', 's')
-            ->where('a.status = :status')
-            ->andWhere('a.dataChegada >= :inicio')
-            ->andWhere('a.dataChegada <= :fim')
-            ->andWhere('a.unidade = :unidade')
-            ->groupBy('s')
-            ->setParameter('status', AtendimentoServiceInterface::ATENDIMENTO_ENCERRADO)
-            ->setParameter('inicio', $dataInicial)
-            ->setParameter('fim', $dataFinal)
-            ->setParameter('unidade', $unidade->getId());
-
-        if ($usuario) {
-            $qb
-                ->andWhere('a.usuario = :usuario')
-                ->setParameter('usuario', $usuario);
-        }
-
-        $rs = $qb
-            ->getQuery()
-            ->getResult();
-        
-        foreach ($rs as $r) {
-            $dados[$r['servico']] = $r['total'];
-        }
-
-        return $dados;
-    }
-
-    public function getTempoMedioAtendimentos(
-        DateTime $dataInicial,
-        DateTime $dataFinal,
-        $unidade,
-        $usuario
-    ) {
-        $domain = NovosgaReportsBundle::getDomain();
-        $dados  = [];
-        $tempos = [
-            'espera'       => $this->translator->trans('label.wait_time', [], $domain),
-            'deslocamento' => $this->translator->trans('label.dislocation_time', [], $domain),
-            'atendimento'  => $this->translator->trans('label.servicing_time', [], $domain),
-            'total'        => $this->translator->trans('label.total_time', [], $domain),
-        ];
-        
-        $qb = $this
-            ->viewAtendimentoRepository
-            ->createQueryBuilder('a')
-            ->select([
-                'AVG(a.tempoEspera) as espera',
-                'AVG(a.tempoDeslocamento) as deslocamento',
-                'AVG(a.tempoAtendimento) as atendimento',
-                'AVG(a.tempoPermanencia) as total',
-            ])
-            ->join('a.unidade', 'u')
-            ->where('a.dataChegada >= :inicio')
-            ->andWhere('a.dataChegada <= :fim')
-            ->andWhere('a.unidade = :unidade')
-            ->setParameter('inicio', $dataInicial)
-            ->setParameter('fim', $dataFinal)
-            ->setParameter('unidade', $unidade->getId());
-           
-        if ($usuario) {
-            $qb
-                ->andWhere('a.usuario = :usuario')
-                ->setParameter('usuario', $usuario);
-        }
-
-        $rs = $qb
-            ->getQuery()
-            ->getResult();
-
-        foreach ($rs as $r) {
-            foreach ($tempos as $k => $v) {
-                $dados[$v] = (int) $r[$k];
-            }
-        }
-
-        return $dados;
-    }
-
+    /** @return array<string,mixed> */
     public function getServicosDisponiveisGlobal(): array
     {
         $rs = $this
@@ -187,6 +66,7 @@ class ReportService
 
     /**
      * Retorna todos os servicos disponiveis para cada unidade.
+     * @return array<string,mixed>
      */
     public function getServicosDisponiveisUnidade(UnidadeInterface $unidade): array
     {
@@ -207,7 +87,7 @@ class ReportService
             ->setParameter('unidade', $unidade)
             ->getQuery()
             ->getResult();
-        
+
         $dados = [
             'unidade'  => $unidade->getNome(),
             'servicos' => $rs,
@@ -216,11 +96,13 @@ class ReportService
         return $dados;
     }
 
+    /** @return array<string,mixed> */
     public function getServicosRealizados(
-        DateTime $dataInicial,
-        DateTime $dataFinal,
+        DateTimeInterface $dataInicial,
+        DateTimeInterface $dataFinal,
         UnidadeInterface $unidade,
         UsuarioInterface|int|null $usuario,
+        int $page = 1,
     ): array {
         $qb = $this
             ->viewAtendimentoCodificadoRepository
@@ -236,11 +118,12 @@ class ReportService
             ->andWhere('e.dataChegada <= :dataFinal')
             ->groupBy('s')
             ->orderBy('s.nome', 'ASC')
-            ->setParameter('dataInicial', $dataInicial)
-            ->setParameter('dataFinal', $dataFinal)
+            ->setParameter('dataInicial', $dataInicial->format('Y-m-d 00:00:00'))
+            ->setParameter('dataFinal', $dataFinal->format('Y-m-d 23:59:59'))
             ->setParameter('unidade', $unidade)
-            ->setMaxResults(self::MAX_RESULTS);
-           
+            ->setMaxResults(self::MAX_RESULTS)
+            ->setFirstResult(max(0, $page - 1) * self::MAX_RESULTS);
+
         if ($usuario) {
             $qb
                 ->andWhere('e.usuario = :usuario')
@@ -250,21 +133,23 @@ class ReportService
         $rs = $qb
             ->getQuery()
             ->getResult();
-        
+
         $dados = [
-            'unidade'  => $unidade->getNome(),
-            'usuario'  => $usuario,
+            'unidade' => $unidade->getNome(),
+            'usuario' => $usuario,
             'servicos' => $rs,
         ];
 
         return $dados;
     }
 
+    /** @return array<string,mixed> */
     public function getAtendimentosConcluidos(
-        DateTime $dataInicial,
-        DateTime $dataFinal,
+        DateTimeInterface $dataInicial,
+        DateTimeInterface $dataFinal,
         UnidadeInterface $unidade,
         UsuarioInterface|int|null $usuario,
+        int $page = 1,
     ): array {
         $qb = $this
             ->viewAtendimentoRepository
@@ -275,10 +160,11 @@ class ReportService
             ->andWhere('e.dataChegada <= :dataFinal')
             ->orderBy('e.dataChegada', 'ASC')
             ->setParameter('status', AtendimentoServiceInterface::ATENDIMENTO_ENCERRADO)
-            ->setParameter('dataInicial', $dataInicial)
-            ->setParameter('dataFinal', $dataFinal)
+            ->setParameter('dataInicial', $dataInicial->format('Y-m-d 00:00:00'))
+            ->setParameter('dataFinal', $dataFinal->format('Y-m-d 23:59:59'))
             ->setParameter('unidade', $unidade)
-            ->setMaxResults(self::MAX_RESULTS);
+            ->setMaxResults(self::MAX_RESULTS)
+            ->setFirstResult(max(0, $page - 1) * self::MAX_RESULTS);
 
         if ($usuario) {
             $qb
@@ -299,11 +185,13 @@ class ReportService
         return $dados;
     }
 
+    /** @return array<string,mixed> */
     public function getAtendimentosStatus(
-        DateTime $dataInicial,
-        DateTime $dataFinal,
+        DateTimeInterface $dataInicial,
+        DateTimeInterface $dataFinal,
         UnidadeInterface $unidade,
         UsuarioInterface|int|null $usuario,
+        int $page = 1,
     ): array {
         $qb = $this
             ->viewAtendimentoRepository
@@ -312,10 +200,11 @@ class ReportService
             ->andWhere('e.dataChegada >= :dataInicial')
             ->andWhere('e.dataChegada <= :dataFinal')
             ->orderBy('e.dataChegada', 'ASC')
-            ->setParameter('dataInicial', $dataInicial)
-            ->setParameter('dataFinal', $dataFinal)
+            ->setParameter('dataInicial', $dataInicial->format('Y-m-d 00:00:00'))
+            ->setParameter('dataFinal', $dataFinal->format('Y-m-d 23:59:59'))
             ->setParameter('unidade', $unidade)
-            ->setMaxResults(self::MAX_RESULTS);
+            ->setMaxResults(self::MAX_RESULTS)
+            ->setFirstResult(max(0, $page - 1) * self::MAX_RESULTS);
 
         if ($usuario) {
             $qb
@@ -336,10 +225,12 @@ class ReportService
         return $dados;
     }
 
+    /** @return array<string,mixed> */
     public function getTempoMedioAtendentes(
-        DateTime $dataInicial,
-        DateTime $dataFinal,
+        DateTimeInterface $dataInicial,
+        DateTimeInterface $dataFinal,
         UnidadeInterface $unidade,
+        int $page = 1,
     ): array {
         $rs = $this
             ->viewAtendimentoRepository
@@ -360,12 +251,13 @@ class ReportService
             ->groupBy('u')
             ->orderBy('u.nome', 'ASC')
             ->setParameter('unidade', $unidade)
-            ->setParameter('dataInicial', $dataInicial)
-            ->setParameter('dataFinal', $dataFinal)
+            ->setParameter('dataInicial', $dataInicial->format('Y-m-d 00:00:00'))
+            ->setParameter('dataFinal', $dataFinal->format('Y-m-d 23:59:59'))
             ->getQuery()
             ->setMaxResults(self::MAX_RESULTS)
+            ->setFirstResult(max(0, $page - 1) * self::MAX_RESULTS)
             ->getResult();
-        
+
         $dados = [
             'unidade' => $unidade->getNome(),
             'atendentes' => $rs,
@@ -376,11 +268,10 @@ class ReportService
 
     /**
      * Retorna todos os usuarios e perfis (lotação) por unidade.
+     * @return array<string,mixed>
      */
-    public function getLotacoes(
-        UnidadeInterface $unidade,
-        string $nomeServico = ''
-    ): array {
+    public function getLotacoes(UnidadeInterface $unidade, int $page = 1): array
+    {
         $lotacoes = $this
             ->lotacaoRepository
             ->createQueryBuilder('e')
@@ -398,15 +289,16 @@ class ReportService
             ->setParameter('unidade', $unidade)
             ->getQuery()
             ->setMaxResults(self::MAX_RESULTS)
+            ->setFirstResult(max(0, $page - 1) * self::MAX_RESULTS)
             ->getResult();
-        
+
         $servicos = [];
         foreach ($lotacoes as $lotacao) {
             $servicos[$lotacao->getUsuario()->getId()] = $this
                 ->usuarioService
                 ->getServicosUnidade($lotacao->getUsuario(), $unidade);
         }
-        
+
         $dados = [
             'unidade' => $unidade->getNome(),
             'lotacoes' => $lotacoes,
@@ -418,6 +310,7 @@ class ReportService
 
     /**
      * Retorna todos os perfis e suas permissões.
+     * @return array<string,mixed>
      */
     public function getPerfis(): array
     {

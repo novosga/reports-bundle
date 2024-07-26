@@ -37,9 +37,9 @@
                         
                         {{ form_row(chartForm.chart, { label: 'Gráfico' }) }}
 
-                        {{ form_row(chartForm.startDate, { label: 'Data inicial', attr: { class: 'datepicker' } }) }}
+                        {{ form_row(chartForm.startDate, { label: 'Data inicial' }) }}
 
-                        {{ form_row(chartForm.endDate, { label: 'Data final', attr: { class: 'datepicker' } }) }}
+                        {{ form_row(chartForm.endDate, { label: 'Data final' }) }}
 
                         {{ form_row(chartForm.usuario, { label: 'Usuário' }) }}
                         
@@ -60,11 +60,11 @@
                 {{ form_row(reportForm.report, { label: 'Relatório', attr: { 'onchange': 'App.Estatisticas.options(\'#tab-relatorios\')' } }) }}
 
                 <div class="option date date-range" style="display:none">
-                    {{ form_row(reportForm.startDate, { label: 'Data inicial', attr: { class: 'datepicker' } }) }}
+                    {{ form_row(reportForm.startDate, { label: 'Data inicial' }) }}
                 </div>
 
                 <div class="option date date-range" style="display:none">
-                    {{ form_row(reportForm.endDate, { label: 'Data final', attr: { class: 'datepicker' } }) }}
+                    {{ form_row(reportForm.endDate, { label: 'Data final' }) }}
                 </div>
 
                 <div class="option user" style="display:none">
@@ -82,19 +82,10 @@
 {% block stylesheets %}
     {{ parent() }}
     <link rel="stylesheet" type="text/css" href="{{ asset('bundles/novosgareports/css/style.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('bundles/novosgareports/css/bootstrap-datepicker.standalone.min.css') }}">
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
     <script type="text/javascript" src="{{ asset('bundles/novosgareports/js/Chart.bundle.min.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('bundles/novosgareports/js/bootstrap-datepicker.min.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('bundles/novosgareports/js/bootstrap-datepicker.pt-BR.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('bundles/novosgareports/js/script.js') }}"></script>
-    <script type="text/javascript">
-        $(".datepicker" ).datepicker({
-            language: 'pt-BR',
-            format: '{% trans %}dd/mm/yyyy{% endtrans %}'
-        });
-    </script>
 {% endblock %}
