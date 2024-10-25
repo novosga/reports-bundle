@@ -1,30 +1,31 @@
 {% trans_default_domain 'NovosgaReportsBundle' %}
 
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>{{ relatorio.titulo }}</title>
-    <link rel="stylesheet" type="text/css" href="{{ asset('css/bootstrap.min.css') }}" />
-    <link type="text/css" rel="stylesheet" href="{{ asset('css/style.css') }}" />
+{% extends "skeleton.html.twig" %}
+
+{% block stylesheets %}
+    {{ parent() }}
     <link type="text/css" rel="stylesheet" href="{{ asset('bundles/novosgareports/css/relatorio.css') }}" />
-    <link rel="shortcut icon" href="{{ asset('images/favicon.png') }}" />
-</head>
-<body>
+{% endblock %}
+
+{% block body_content %}
     <div id="report" class="container">
-        <div id="report-header">
-            <a href="javascript:window.print()" class="print">
-                <i class="fa fa-print"></i>
-                {% trans %}Imprimir{% endtrans %}
-            </a>
-            <h1>{{ relatorio.titulo }}</h1>
+        <a href="javascript:window.print()" class="float-end btn btn-link d-print-none">
+            <i class="fa fa-print"></i>
+            {% trans %}Imprimir{% endtrans %}
+        </a>
+        <div id="report-header" class="d-flex align-items-center">
+            <div>
+                <img src="{{ asset('images/novosga-navbar.png') }}">
+            </div>
+            <div>
+                <h1>{{ relatorio.titulo }}</h1>
+            </div>
         </div>
         <div id="report-body">
             {% include template %}
         </div>
         <div id="report-footer">
-            <p>{{ relatorio.titulo }} - Novo SGA v{{ version }}</p>
+            <p><b>{{ relatorio.titulo }}</b> - {{ title }} v{{ version }}</p>
         </div>
     </div>
-</body>
-</html>
+{% endblock %}

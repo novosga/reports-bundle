@@ -23,6 +23,7 @@ use Novosga\Repository\ServicoUnidadeRepositoryInterface;
 use Novosga\Repository\ViewAtendimentoCodificadoRepositoryInterface;
 use Novosga\Repository\ViewAtendimentoRepositoryInterface;
 use Novosga\Service\AtendimentoServiceInterface;
+use Novosga\Service\ModuleServiceInterface;
 use Novosga\Service\UsuarioServiceInterface;
 
 /**
@@ -36,6 +37,7 @@ class ReportService
 
     public function __construct(
         private readonly UsuarioServiceInterface $usuarioService,
+        private readonly ModuleServiceInterface $moduleService,
         private readonly PerfilRepositoryInterface $perfilRepository,
         private readonly LotacaoRepositoryInterface $lotacaoRepository,
         private readonly ServicoRepositoryInterface $servicoRepository,
@@ -316,11 +318,18 @@ class ReportService
     {
         $dados = [];
         $perfis = $this->perfilRepository->findBy([], [ 'nome' => 'ASC' ]);
+        $modulesMap = [];
+        foreach ($this->moduleService->getInstalledModules() as $module) {
+            $modulesMap[$module->key] = $module->displayName;
+        }
 
         foreach ($perfis as $perfil) {
             $dados[$perfil->getId()] = [
                 'perfil' => $perfil->getNome(),
-                'permissoes' => $perfil->getModulos(),
+                'permissoes' => array_map(
+                    fn (string $modulo) => [ 'nome' => $modulesMap[$modulo] ?? $modulo, 'chave' => $modulo, ],
+                    $perfil->getModulos(),
+                ),
             ];
         }
 

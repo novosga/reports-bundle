@@ -3,19 +3,14 @@
 {% trans_default_domain 'NovosgaReportsBundle' %}
 
 {% block body %}
-    <div class="row">
-        <div class="col-sm-12">
+    <div class="d-flex">
+        <div>
             <h1>
-                <i class="fa fa-desktop" aria-hidden="true"></i>
-                {{ 'title'|trans }}
-                <small>
-                    {{ 'subtitle'|trans }}
-                </small>
+                <i class="fa fa-bar-chart" aria-hidden="true"></i> {{ 'title'|trans }}
             </h1>
+            <p>{{ 'subtitle'|trans }}</p>
         </div>
     </div>
-
-    <hr>
     
     <ul class="nav nav-tabs">
         <li class="nav-item">

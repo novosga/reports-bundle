@@ -13,7 +13,12 @@
         <tbody>
             {% for permissao in dado.permissoes %}
                 <tr>
-                    <td>{{ permissao }}</td>
+                    <td>
+                        {{ permissao.nome }}
+                        {% if permissao.nome != permissao.chave %}
+                            ({{ permissao.chave }})
+                        {% endif %}
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>
