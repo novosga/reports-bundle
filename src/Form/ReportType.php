@@ -37,7 +37,7 @@ class ReportType extends AbstractType
     ) {
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $domain = NovosgaReportsBundle::getDomain();
         $today = new DateTime('today');
@@ -105,7 +105,7 @@ class ReportType extends AbstractType
             ]);
     }
 
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
         return '';
     }
