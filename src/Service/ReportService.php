@@ -156,6 +156,13 @@ class ReportService
         $qb = $this
             ->viewAtendimentoRepository
             ->createQueryBuilder('e')
+            ->select([
+                'e',
+                's',
+                'u',
+            ])
+            ->join('e.servico', 's')
+            ->join('e.usuario', 'u')
             ->where('e.unidade = :unidade')
             ->andWhere('e.status = :status')
             ->andWhere('e.dataChegada >= :dataInicial')
@@ -165,6 +172,7 @@ class ReportService
             ->setParameter('dataInicial', $dataInicial->format('Y-m-d 00:00:00'))
             ->setParameter('dataFinal', $dataFinal->format('Y-m-d 23:59:59'))
             ->setParameter('unidade', $unidade)
+            ->orderBy('e.id')
             ->setMaxResults(self::MAX_RESULTS)
             ->setFirstResult(max(0, $page - 1) * self::MAX_RESULTS);
 
@@ -198,6 +206,15 @@ class ReportService
         $qb = $this
             ->viewAtendimentoRepository
             ->createQueryBuilder('e')
+            ->select([
+                'e',
+                's',
+                'u',
+                'c',
+            ])
+            ->join('e.servico', 's')
+            ->join('e.usuario', 'u')
+            ->leftJoin('e.cliente', 'c')
             ->where('e.unidade = :unidade')
             ->andWhere('e.dataChegada >= :dataInicial')
             ->andWhere('e.dataChegada <= :dataFinal')
@@ -206,6 +223,7 @@ class ReportService
             ->setParameter('dataFinal', $dataFinal->format('Y-m-d 23:59:59'))
             ->setParameter('unidade', $unidade)
             ->setMaxResults(self::MAX_RESULTS)
+            ->orderBy('e.id')
             ->setFirstResult(max(0, $page - 1) * self::MAX_RESULTS);
 
         if ($usuario) {

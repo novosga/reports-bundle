@@ -1,50 +1,50 @@
 {% trans_default_domain 'NovosgaReportsBundle' %}
 
-<div class="header">
-    <h2>{{ relatorio.dados.unidade }}</h2>
-    {% if relatorio.dados.usuario %}
-        <h4>{{ relatorio.dados.usuario.nomeCompleto }}</h4>
-    {% endif %}
-    <p>{% trans with {'%dataInicial%': dataInicial|date('d/m/Y'), '%dataFinal%': dataFinal|date('d/m/Y')} from "app" %}Período de %dataInicial% a %dataFinal%{% endtrans %}</p>
-</div>
-<table class="table table-bordered table-striped">
-    <thead class="thead-light">
-        <tr>
-            <th>{{ 'label.ticket'|trans }}</th>
-            <th>{% trans %}Cliente{% endtrans %}</th>
-            <th>{% trans %}Data{% endtrans %}</th>
-            <th title="{% trans %}Hora de Chamada{% endtrans %}">{% trans %}Chamada{% endtrans %}</th>
-            <th title="{% trans %}Hora do Início do atendimento{% endtrans %}">{% trans %}Início{% endtrans %}</th>
-            <th title="{% trans %}Hora do Fim do atendimento{% endtrans %}">{% trans %}Fim{% endtrans %}</th>
-            <th title="{% trans %}Serviço escolhido na triagem{% endtrans %}">{% trans %}Serviço Triado{% endtrans %}</th>
-            <th>{% trans %}Status{% endtrans %}</th>
-            <th>{% trans %}Atendente{% endtrans %}</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for a in relatorio.dados.atendimentos %}
+<div class="container-fluid">
+    <div class="header">
+        <h2>{{ relatorio.dados.unidade }}</h2>
+        {% if relatorio.dados.usuario %}
+            <h4>{{ relatorio.dados.usuario.nomeCompleto }}</h4>
+        {% endif %}
+        <p>{% trans with {'%dataInicial%': dataInicial|date('d/m/Y'), '%dataFinal%': dataFinal|date('d/m/Y')} from "app" %}Período de %dataInicial% a %dataFinal%{% endtrans %}</p>
+    </div>
+    <table class="table table-bordered table-striped">
+        <thead class="thead-light">
             <tr>
-                <td>{{ a.senha.sigla }}{{ a.senha.numero }}</td>
-                <td>{{ a.cliente ? a.cliente.nome : '' }}</td>
-                <td>{{ a.dataChegada|date('d/m/Y') }}</td>
-                <td>{{ a.dataChamada is empty ? "" : a.dataChamada|date('H:i:s') }}</td>
-                <td>{{ a.dataInicio is empty ? "" : a.dataInicio|date('H:i:s') }}</td>
-                <td>{{ a.dataFim is empty ? "" : a.dataFim|date('H:i:s') }}</td>
-                <td>{{ a.servico.nome }}</td>
-                <td>{{ a.status }}</td>
-                <td>
-                    {%- if a.usuario -%}
-                        {{ a.usuario.login }}
-                    {%- endif -%}
+                <th>{{ 'label.ticket'|trans }}</th>
+                <th>{% trans %}Data{% endtrans %}</th>
+                <th title="{% trans %}Hora de Chegada{% endtrans %}">{% trans %}Chegada{% endtrans %}</th>
+                <th title="{% trans %}Hora de Chamada{% endtrans %}">{% trans %}Chamada{% endtrans %}</th>
+                <th title="{% trans %}Hora do Início do atendimento{% endtrans %}">{% trans %}Início{% endtrans %}</th>
+                <th title="{% trans %}Hora do Fim do atendimento{% endtrans %}">{% trans %}Fim{% endtrans %}</th>
+                <th title="{% trans %}Serviço escolhido na triagem{% endtrans %}">{% trans %}Serviço Triado{% endtrans %}</th>
+                <th>{% trans %}Status{% endtrans %}</th>
+                <th>{% trans %}Cliente{% endtrans %}</th>
+                <th>{% trans %}Atendente{% endtrans %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for a in relatorio.dados.atendimentos %}
+                <tr>
+                    <td>{{ a.senha.sigla }}{{ a.senha.numero }}</td>
+                    <td>{{ a.dataChegada|date('d/m/Y') }}</td>
+                    <td>{{ a.dataChegada|date('H:i:s') }}</td>
+                    <td>{{ a.dataChamada is empty ? "" : a.dataChamada|date('H:i:s') }}</td>
+                    <td>{{ a.dataInicio is empty ? "" : a.dataInicio|date('H:i:s') }}</td>
+                    <td>{{ a.dataFim is empty ? "" : a.dataFim|date('H:i:s') }}</td>
+                    <td>{{ a.servico.nome }}</td>
+                    <td>{{ a.status }}</td>
+                    <td>{{ a.cliente ? a.cliente.nome : '' }}</td>
+                    <td>{{ a.usuario ? a.usuario.login : '' }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="9">
+                    <strong>Total: {{ relatorio.dados.atendimentos|length }}</strong>
                 </td>
             </tr>
-        {% endfor %}
-    </tbody>
-    <tfoot>
-        <tr>
-            <td colspan="9">
-                <strong>Total: {{ relatorio.dados.atendimentos|length }}</strong>
-            </td>
-        </tr>
-    </tfoot>
-</table>
+        </tfoot>
+    </table>
+</div>

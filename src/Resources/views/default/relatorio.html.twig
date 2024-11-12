@@ -8,17 +8,19 @@
 {% endblock %}
 
 {% block body_content %}
-    <div id="report" class="container">
-        <a href="javascript:window.print()" class="float-end btn btn-link d-print-none">
-            <i class="fa fa-print"></i>
-            {% trans %}Imprimir{% endtrans %}
-        </a>
-        <div id="report-header" class="d-flex align-items-center">
-            <div>
-                <img src="{{ asset('images/novosga-navbar.png') }}">
-            </div>
-            <div>
-                <h1>{{ relatorio.titulo }}</h1>
+    <div id="report">
+        <div class="container">
+            <a href="javascript:window.print()" class="float-end btn btn-link d-print-none">
+                <i class="fa fa-print"></i>
+                {% trans %}Imprimir{% endtrans %}
+            </a>
+            <div id="report-header" class="d-flex align-items-center">
+                <div>
+                    <img src="{{ asset('images/novosga-navbar.png') }}">
+                </div>
+                <div>
+                    <h1>{{ relatorio.titulo }}</h1>
+                </div>
             </div>
         </div>
         <div id="report-body">

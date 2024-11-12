@@ -1,52 +1,54 @@
 {% trans_default_domain 'NovosgaReportsBundle' %}
 
-<table class="table table-bordered">
-    <thead class="thead-light">
-        <tr>
-            <th>{% trans %}Serviço{% endtrans %}</th>
-            <th>{% trans %}Situação{% endtrans %}</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for servico in relatorio.dados %}
+<div class="container">
+    <table class="table table-bordered">
+        <thead class="thead-light">
             <tr>
-                <td class="strong">{{ servico.nome }}</td>
-                <td class="w100 center">
-                    {% if servico.ativo %}
-                        <span class="status-active">{% trans %}Ativo{% endtrans %}</span>
-                    {% else %}
-                        <span class="status-inactive">{% trans %}Inativo{% endtrans %}</span>
-                    {% endif %}
-                </td>
+                <th>{% trans %}Serviço{% endtrans %}</th>
+                <th>{% trans %}Situação{% endtrans %}</th>
             </tr>
-            {% if servico.subServicos|length %}
-                <tr class="sub-table">
-                    <td colspan="2">
-                        <table class="table table-bordered table-striped subservicos">
-                            <thead>
-                                <tr>
-                                    <th>{% trans %}Subserviço{% endtrans %}</th>
-                                    <th>{% trans %}Situação{% endtrans %}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for subServico in servico.subServicos %}
-                                <tr>
-                                    <td class="nome">{{ subServico.nome }}</td>
-                                    <td class="w100 center">
-                                        {% if subServico.ativo %}
-                                            <span class="status-active">{% trans %}Ativo{% endtrans %}</span>
-                                        {% else %}
-                                            <span class="status-inactive">{% trans %}Inativo{% endtrans %}</span>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+        </thead>
+        <tbody>
+            {% for servico in relatorio.dados %}
+                <tr>
+                    <td class="strong">{{ servico.nome }}</td>
+                    <td class="w100 center">
+                        {% if servico.ativo %}
+                            <span class="status-active">{% trans %}Ativo{% endtrans %}</span>
+                        {% else %}
+                            <span class="status-inactive">{% trans %}Inativo{% endtrans %}</span>
+                        {% endif %}
                     </td>
                 </tr>
-            {% endif %}
-        {% endfor %}
-    </tbody>
-</table>
+                {% if servico.subServicos|length %}
+                    <tr class="sub-table">
+                        <td colspan="2">
+                            <table class="table table-bordered table-striped subservicos">
+                                <thead>
+                                    <tr>
+                                        <th>{% trans %}Subserviço{% endtrans %}</th>
+                                        <th>{% trans %}Situação{% endtrans %}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for subServico in servico.subServicos %}
+                                    <tr>
+                                        <td class="nome">{{ subServico.nome }}</td>
+                                        <td class="w100 center">
+                                            {% if subServico.ativo %}
+                                                <span class="status-active">{% trans %}Ativo{% endtrans %}</span>
+                                            {% else %}
+                                                <span class="status-inactive">{% trans %}Inativo{% endtrans %}</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
