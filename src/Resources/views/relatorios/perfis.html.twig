@@ -1,26 +1,28 @@
 {% trans_default_domain 'NovosgaReportsBundle' %}
 
-{% for dado in relatorio.dados %}
-    <div class="header">
-        <h2>{{ dado.perfil }}</h2>
-    </div>
-    <table class="table table-bordered table-striped">
-        <thead class="thead-light">
-            <tr>
-                <th>{% trans %}Módulos{% endtrans %}</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for permissao in dado.permissoes %}
+<div class="container">
+    {% for dado in relatorio.dados %}
+        <div class="header">
+            <h2>{{ dado.perfil }}</h2>
+        </div>
+        <table class="table table-bordered table-striped">
+            <thead class="thead-light">
                 <tr>
-                    <td>
-                        {{ permissao.nome }}
-                        {% if permissao.nome != permissao.chave %}
-                            ({{ permissao.chave }})
-                        {% endif %}
-                    </td>
+                    <th>{% trans %}Módulos{% endtrans %}</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-{% endfor %}
+            </thead>
+            <tbody>
+                {% for permissao in dado.permissoes %}
+                    <tr>
+                        <td>
+                            {{ permissao.nome }}
+                            {% if permissao.nome != permissao.chave %}
+                                ({{ permissao.chave }})
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endfor %}
+</div>

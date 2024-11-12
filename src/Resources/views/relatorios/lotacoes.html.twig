@@ -1,39 +1,41 @@
 {% trans_default_domain 'NovosgaReportsBundle' %}
 
-<div class="header">
-    <h2>{{ relatorio.dados.unidade }}</h2>
-</div>
-<table class="table table-bordered table-striped">
-    <thead class="thead-light">
-        <tr>
-            <th>{% trans %}Usuário{% endtrans %}</th>
-            <th>{% trans %}Nome{% endtrans %}</th>
-            <th>{% trans %}Perfil{% endtrans %}</th>
-            <th>{% trans %}Serviços{% endtrans %}</th>
-            <th>{% trans %}Situação{% endtrans %}</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for lotacao in relatorio.dados.lotacoes %}
+<div class="container">
+    <div class="header">
+        <h2>{{ relatorio.dados.unidade }}</h2>
+    </div>
+    <table class="table table-bordered table-striped">
+        <thead class="thead-light">
             <tr>
-                <td class="strong">{{ lotacao.usuario.login }}</td>
-                <td>{{ lotacao.usuario.nomeCompleto }}</td>
-                <td>{{ lotacao.perfil.nome }}</td>
-                <td>
-                    <ul>
-                        {% for su in relatorio.dados.servicos[lotacao.usuario.id] %}
-                            <li>{{ su.servico.nome }}</li>
-                        {% endfor %}
-                    </ul>
-                </td>
-                <td class="w75 center">
-                    {% if lotacao.usuario.ativo %}
-                        <span class="status-active">{% trans %}Ativo{% endtrans %}</span>
-                    {% else %}
-                        <span class="status-inactive">{% trans %}Inativo{% endtrans %}</span>
-                    {% endif %}
-                </td>
+                <th>{% trans %}Usuário{% endtrans %}</th>
+                <th>{% trans %}Nome{% endtrans %}</th>
+                <th>{% trans %}Perfil{% endtrans %}</th>
+                <th>{% trans %}Serviços{% endtrans %}</th>
+                <th>{% trans %}Situação{% endtrans %}</th>
             </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            {% for lotacao in relatorio.dados.lotacoes %}
+                <tr>
+                    <td class="strong">{{ lotacao.usuario.login }}</td>
+                    <td>{{ lotacao.usuario.nomeCompleto }}</td>
+                    <td>{{ lotacao.perfil.nome }}</td>
+                    <td>
+                        <ul>
+                            {% for su in relatorio.dados.servicos[lotacao.usuario.id] %}
+                                <li>{{ su.servico.nome }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td class="w75 center">
+                        {% if lotacao.usuario.ativo %}
+                            <span class="status-active">{% trans %}Ativo{% endtrans %}</span>
+                        {% else %}
+                            <span class="status-inactive">{% trans %}Inativo{% endtrans %}</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

@@ -1,35 +1,37 @@
 {% trans_default_domain 'NovosgaReportsBundle' %}
 
-<div class="header">
-    <h2>{{ relatorio.dados.unidade }}</h2>
-    {% if relatorio.dados.usuario %}
-        <h4>{{ relatorio.dados.usuario.nomeCompleto }}</h4>
-    {% endif %}
-    <p>{% trans with {'%dataInicial%': dataInicial|date('d/m/Y'), '%dataFinal%': dataFinal|date('d/m/Y')} from "app" %}Período de %dataInicial% a %dataFinal%{% endtrans %}</p>
-</div>
-<table class="table table-bordered table-striped">
-    <thead class="thead-light">
-        <tr>
-            <th>{% trans %}Serviço{% endtrans %}</th>
-            <th>{% trans %}Total{% endtrans %}</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% set total = 0 %}
-        {% for s in relatorio.dados.servicos %}
+<div class="container">
+    <div class="header">
+        <h2>{{ relatorio.dados.unidade }}</h2>
+        {% if relatorio.dados.usuario %}
+            <h4>{{ relatorio.dados.usuario.nomeCompleto }}</h4>
+        {% endif %}
+        <p>{% trans with {'%dataInicial%': dataInicial|date('d/m/Y'), '%dataFinal%': dataFinal|date('d/m/Y')} from "app" %}Período de %dataInicial% a %dataFinal%{% endtrans %}</p>
+    </div>
+    <table class="table table-bordered table-striped">
+        <thead class="thead-light">
             <tr>
-                <td>{{ s.nome }}</td>
-                <td>{{ s.total }}</td>
-                {% set total = total + s.total %}
+                <th>{% trans %}Serviço{% endtrans %}</th>
+                <th>{% trans %}Total{% endtrans %}</th>
             </tr>
-        {% endfor %}
-    </tbody>
-    <tfoot>
-        <tr>
-            <td></td>
-            <td>
-                <strong>Total: {{ total }}</strong>
-            </td>
-        </tr>
-    </tfoot>
-</table>
+        </thead>
+        <tbody>
+            {% set total = 0 %}
+            {% for s in relatorio.dados.servicos %}
+                <tr>
+                    <td>{{ s.nome }}</td>
+                    <td>{{ s.total }}</td>
+                    {% set total = total + s.total %}
+                </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td></td>
+                <td>
+                    <strong>Total: {{ total }}</strong>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
