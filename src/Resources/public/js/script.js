@@ -2,8 +2,6 @@
  * Novo SGA - Estatisticas
  * @author Rogerio Lino <rogeriolino@gmail.com>
  */
-var App = App || {};
-
 App.Estatisticas = {
     options(group) {
         const elems = [...document.querySelectorAll(group + ' .option')];
