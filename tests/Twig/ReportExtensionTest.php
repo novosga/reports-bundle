@@ -19,7 +19,7 @@ class ReportExtensionTest extends TestCase
     {
         $seconds = 3661; // 1 hour, 1 minute, 1 second
         $result = $this->extension->secToDateFilter($seconds);
-        
+
         $this->assertInstanceOf(DateTime::class, $result);
         $this->assertEquals('01:01:01', $result->format('H:i:s'));
     }
@@ -28,7 +28,7 @@ class ReportExtensionTest extends TestCase
     {
         $seconds = 47.25; // Should round to 47 seconds
         $result = $this->extension->secToDateFilter($seconds);
-        
+
         $this->assertInstanceOf(DateTime::class, $result);
         $this->assertEquals('00:00:47', $result->format('H:i:s'));
     }
@@ -37,7 +37,7 @@ class ReportExtensionTest extends TestCase
     {
         $seconds = 47.75; // Should round to 48 seconds
         $result = $this->extension->secToDateFilter($seconds);
-        
+
         $this->assertInstanceOf(DateTime::class, $result);
         $this->assertEquals('00:00:48', $result->format('H:i:s'));
     }
@@ -46,7 +46,7 @@ class ReportExtensionTest extends TestCase
     {
         $seconds = 3661.8; // Should round to 3662 seconds (1:01:02)
         $result = $this->extension->secToDateFilter($seconds);
-        
+
         $this->assertInstanceOf(DateTime::class, $result);
         $this->assertEquals('01:01:02', $result->format('H:i:s'));
     }
