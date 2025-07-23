@@ -20,7 +20,7 @@ class ReportExtension extends AbstractExtension
         ];
     }
 
-    public function secToDateFilter(float $seconds): DateTime
+    public function secToDateFilter(int|float|string $seconds): DateTime
     {
         $dt = new DateTime();
         $dt->setTime(0, 0, 0);

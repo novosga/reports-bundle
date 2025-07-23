@@ -50,4 +50,13 @@ class ReportExtensionTest extends TestCase
         $this->assertInstanceOf(DateTime::class, $result);
         $this->assertEquals('01:01:02', $result->format('H:i:s'));
     }
+
+    public function testSecToDateFilterWithStringInput(): void
+    {
+        $seconds = "47.25"; // String representation should work the same
+        $result = $this->extension->secToDateFilter($seconds);
+
+        $this->assertInstanceOf(DateTime::class, $result);
+        $this->assertEquals('00:00:47', $result->format('H:i:s'));
+    }
 }
