@@ -24,7 +24,7 @@ class ReportExtension extends AbstractExtension
     {
         $dt = new DateTime();
         $dt->setTime(0, 0, 0);
-        $dt->add(new \DateInterval("PT" . (int)round($seconds) . "S"));
+        $dt->add(new \DateInterval("PT" . (int)round((float)$seconds) . "S"));
 
         return $dt;
     }
