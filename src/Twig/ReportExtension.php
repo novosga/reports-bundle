@@ -20,11 +20,11 @@ class ReportExtension extends AbstractExtension
         ];
     }
 
-    public function secToDateFilter(int $seconds): DateTime
+    public function secToDateFilter(int|float|string $seconds): DateTime
     {
         $dt = new DateTime();
         $dt->setTime(0, 0, 0);
-        $dt->add(new \DateInterval("PT{$seconds}S"));
+        $dt->add(new \DateInterval("PT" . (int)round((float)$seconds) . "S"));
 
         return $dt;
     }
