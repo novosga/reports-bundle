@@ -59,4 +59,13 @@ class ReportExtensionTest extends TestCase
         $this->assertInstanceOf(DateTime::class, $result);
         $this->assertEquals('00:00:47', $result->format('H:i:s'));
     }
+
+    public function testSecToDateFilterWithHighPrecisionStringInput(): void
+    {
+        $seconds = "47.2500000000000000"; // High precision string from original issue
+        $result = $this->extension->secToDateFilter($seconds);
+
+        $this->assertInstanceOf(DateTime::class, $result);
+        $this->assertEquals('00:00:47', $result->format('H:i:s'));
+    }
 }
