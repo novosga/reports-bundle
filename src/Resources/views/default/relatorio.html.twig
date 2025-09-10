@@ -2,6 +2,10 @@
 
 {% extends "skeleton.html.twig" %}
 
+{% block title %}
+    {{ relatorio.titulo }}
+{% endblock %}
+
 {% block stylesheets %}
     {{ parent() }}
     <link type="text/css" rel="stylesheet" href="{{ asset('bundles/novosgareports/css/relatorio.css') }}" />
