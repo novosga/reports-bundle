@@ -1,11 +1,11 @@
 {% trans_default_domain 'NovosgaReportsBundle' %}
 
 {% set total = 0 %}
-{% set espera = 0 %}
-{% set deslocamento = 0 %}
-{% set deslocamento = 0 %}
-{% set atendimento = 0 %}
+{% set totalEspera = 0 %}
+{% set totalDeslocamento = 0 %}
+{% set totalAtendimento = 0 %}
 {% set tempoTotal = 0 %}
+{% set totalAtendentes = relatorio.dados.atendentes|length %}
 
 <div class="container">
     <div class="header">
@@ -27,10 +27,9 @@
         <tbody>
             {% for dado in relatorio.dados.atendentes %}
                 {% set total = total + dado.total %}
-                {% set espera = espera + dado.espera %}
-                {% set deslocamento = deslocamento + dado.deslocamento %}
-                {% set deslocamento = deslocamento + dado.deslocamento %}
-                {% set atendimento = atendimento + dado.atendimento %}
+                {% set totalEspera = totalEspera + dado.espera %}
+                {% set totalDeslocamento = totalDeslocamento + dado.deslocamento %}
+                {% set totalAtendimento = totalAtendimento + dado.atendimento %}
                 {% set tempoTotal = tempoTotal + dado.tempoTotal %}
                 <tr>
                     <td class="strong">{{ dado.atendente }}</td>
@@ -43,13 +42,37 @@
             {% endfor %}
         </tbody>
         <tfoot>
-            <tr>
-                <td class="strong">&nbsp;</td>
+            <tr class="fw-bold">
+                <td>&nbsp;</td>
                 <td>{{ total }}</td>
-                <td>{{ espera|secToDate|date('H:i:s') }}</td>
-                <td>{{ deslocamento|secToDate|date('H:i:s') }}</td>
-                <td>{{ atendimento|secToDate|date('H:i:s') }}</td>
-                <td>{{ tempoTotal|secToDate|date('H:i:s') }}</td>
+                <td>
+                    {% if totalAtendentes > 0 %}
+                        {{ (totalEspera / totalAtendentes)|secToDate|date('H:i:s') }}
+                    {% else %}
+                        00:00:00
+                    {% endif %}
+                </td>
+                <td>
+                    {% if totalAtendentes > 0 %}
+                        {{ (totalDeslocamento / totalAtendentes)|secToDate|date('H:i:s') }}
+                    {% else %}
+                        00:00:00
+                    {% endif %}
+                </td>
+                <td>
+                    {% if totalAtendentes > 0 %}
+                        {{ (totalAtendimento / totalAtendentes)|secToDate|date('H:i:s') }}
+                    {% else %}
+                        00:00:00
+                    {% endif %}
+                </td>
+                <td>
+                    {% if totalAtendentes > 0 %}
+                        {{ (tempoTotal / totalAtendentes)|secToDate|date('H:i:s') }}
+                    {% else %}
+                        00:00:00
+                    {% endif %}
+                </td>
             </tr>
         </tfoot>
     </table>
