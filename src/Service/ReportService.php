@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Novosga\ReportsBundle\Service;
 
 use DateTimeInterface;
+use Doctrine\DBAL\Types\Types;
 use Novosga\Entity\UnidadeInterface;
 use Novosga\Entity\UsuarioInterface;
 use Novosga\Repository\LotacaoRepositoryInterface;
@@ -91,6 +92,7 @@ class ReportService
             ->getResult();
 
         $dados = [
+            'timezone' => $unidade->getTimezone(),
             'unidade'  => $unidade->getNome(),
             'servicos' => $rs,
         ];
@@ -120,8 +122,8 @@ class ReportService
             ->andWhere('e.dataChegada <= :dataFinal')
             ->groupBy('s')
             ->orderBy('s.nome', 'ASC')
-            ->setParameter('dataInicial', $dataInicial->format('Y-m-d 00:00:00'))
-            ->setParameter('dataFinal', $dataFinal->format('Y-m-d 23:59:59'))
+            ->setParameter('dataInicial', $dataInicial, Types::DATETIME_IMMUTABLE)
+            ->setParameter('dataFinal', $dataFinal, Types::DATETIME_IMMUTABLE)
             ->setParameter('unidade', $unidade)
             ->setMaxResults(self::MAX_RESULTS)
             ->setFirstResult(max(0, $page - 1) * self::MAX_RESULTS);
@@ -137,6 +139,7 @@ class ReportService
             ->getResult();
 
         $dados = [
+            'timezone' => $unidade->getTimezone(),
             'unidade' => $unidade->getNome(),
             'usuario' => $usuario,
             'servicos' => $rs,
@@ -169,8 +172,8 @@ class ReportService
             ->andWhere('e.dataChegada <= :dataFinal')
             ->orderBy('e.dataChegada', 'ASC')
             ->setParameter('status', AtendimentoServiceInterface::ATENDIMENTO_ENCERRADO)
-            ->setParameter('dataInicial', $dataInicial->format('Y-m-d 00:00:00'))
-            ->setParameter('dataFinal', $dataFinal->format('Y-m-d 23:59:59'))
+            ->setParameter('dataInicial', $dataInicial, Types::DATETIME_IMMUTABLE)
+            ->setParameter('dataFinal', $dataFinal, Types::DATETIME_IMMUTABLE)
             ->setParameter('unidade', $unidade)
             ->orderBy('e.id')
             ->setMaxResults(self::MAX_RESULTS)
@@ -187,6 +190,7 @@ class ReportService
             ->getResult();
 
         $dados = [
+            'timezone' => $unidade->getTimezone(),
             'unidade' => $unidade->getNome(),
             'usuario' => $usuario,
             'atendimentos' => $rs,
@@ -219,8 +223,8 @@ class ReportService
             ->andWhere('e.dataChegada >= :dataInicial')
             ->andWhere('e.dataChegada <= :dataFinal')
             ->orderBy('e.dataChegada', 'ASC')
-            ->setParameter('dataInicial', $dataInicial->format('Y-m-d 00:00:00'))
-            ->setParameter('dataFinal', $dataFinal->format('Y-m-d 23:59:59'))
+            ->setParameter('dataInicial', $dataInicial, Types::DATETIME_IMMUTABLE)
+            ->setParameter('dataFinal', $dataFinal, Types::DATETIME_IMMUTABLE)
             ->setParameter('unidade', $unidade)
             ->setMaxResults(self::MAX_RESULTS)
             ->orderBy('e.id')
@@ -237,6 +241,7 @@ class ReportService
             ->getResult();
 
         $dados = [
+            'timezone' => $unidade->getTimezone(),
             'unidade' => $unidade->getNome(),
             'usuario' => $usuario,
             'atendimentos' => $rs,
@@ -271,14 +276,15 @@ class ReportService
             ->groupBy('u')
             ->orderBy('u.nome', 'ASC')
             ->setParameter('unidade', $unidade)
-            ->setParameter('dataInicial', $dataInicial->format('Y-m-d 00:00:00'))
-            ->setParameter('dataFinal', $dataFinal->format('Y-m-d 23:59:59'))
+            ->setParameter('dataInicial', $dataInicial, Types::DATETIME_IMMUTABLE)
+            ->setParameter('dataFinal', $dataFinal, Types::DATETIME_IMMUTABLE)
             ->getQuery()
             ->setMaxResults(self::MAX_RESULTS)
             ->setFirstResult(max(0, $page - 1) * self::MAX_RESULTS)
             ->getResult();
 
         $dados = [
+            'timezone' => $unidade->getTimezone(),
             'unidade' => $unidade->getNome(),
             'atendentes' => $rs,
         ];
@@ -320,6 +326,7 @@ class ReportService
         }
 
         $dados = [
+            'timezone' => $unidade->getTimezone(),
             'unidade' => $unidade->getNome(),
             'lotacoes' => $lotacoes,
             'servicos' => $servicos,
