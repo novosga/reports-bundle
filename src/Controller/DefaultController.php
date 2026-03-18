@@ -13,6 +13,9 @@ declare(strict_types=1);
 
 namespace Novosga\ReportsBundle\Controller;
 
+use DateTimeImmutable;
+use DateTimeInterface;
+use DateTimeZone;
 use Exception;
 use Novosga\Entity\UnidadeInterface;
 use Novosga\Entity\UsuarioInterface;
@@ -69,30 +72,33 @@ class DefaultController extends AbstractController
         }
 
         $unidade = $this->getUnidade();
+        // convert local date time (unit timezone) to UTC
+        $startDate = $this->localDateToUTC($unidade, $data->startDate, '00:00:00');
+        $endDate = $this->localDateToUTC($unidade, $data->endDate, '23:59:59');
 
         switch ($data->chart->id) {
             case 1:
                 $data->chart->legendas = $atendimentoService->getSituacoes();
                 $data->chart->dados = $chartService->getTotalAtendimentosStatus(
                     $data->chart->legendas,
-                    $data->startDate,
-                    $data->endDate,
+                    $startDate,
+                    $endDate,
                     $unidade,
                     $data->usuario
                 );
                 break;
             case 2:
                 $data->chart->dados = $chartService->getTotalAtendimentosServico(
-                    $data->startDate,
-                    $data->endDate,
+                    $startDate,
+                    $endDate,
                     $unidade,
                     $data->usuario
                 );
                 break;
             case 3:
                 $data->chart->dados = $chartService->getTempoMedioAtendimentos(
-                    $data->startDate,
-                    $data->endDate,
+                    $startDate,
+                    $endDate,
                     $unidade,
                     $data->usuario
                 );
@@ -121,32 +127,35 @@ class DefaultController extends AbstractController
         }
 
         $unidade = $this->getUnidade();
+        // convert local date time (unit timezone) to UTC
+        $startDate = $this->localDateToUTC($unidade, $data->startDate, '00:00:00');
+        $endDate = $this->localDateToUTC($unidade, $data->endDate, '23:59:59');
 
         $data->report->dados = match ($data->report->id) {
             1 => $reportService->getServicosDisponiveisGlobal(),
             2 => $reportService->getServicosDisponiveisUnidade($unidade),
             3 => $reportService->getServicosRealizados(
-                $data->startDate,
-                $data->endDate,
+                $startDate,
+                $endDate,
                 $unidade,
                 $data->usuario,
                 $page
             ),
             4 => $reportService->getAtendimentosConcluidos(
-                $data->startDate,
-                $data->endDate,
+                $startDate,
+                $endDate,
                 $unidade,
                 $data->usuario,
                 $page
             ),
             5 => $reportService->getAtendimentosStatus(
-                $data->startDate,
-                $data->endDate,
+                $startDate,
+                $endDate,
                 $unidade,
                 $data->usuario,
                 $page
             ),
-            6 => $reportService->getTempoMedioAtendentes($data->startDate, $data->endDate, $unidade, $page),
+            6 => $reportService->getTempoMedioAtendentes($startDate, $endDate, $unidade, $page),
             7 => $reportService->getLotacoes($unidade, $page),
             8 => $reportService->getPerfis(),
             default => []
@@ -168,5 +177,13 @@ class DefaultController extends AbstractController
         $unidade = $usuario->getLotacao()->getUnidade();
 
         return $unidade;
+    }
+
+    private function localDateToUTC(UnidadeInterface $unidade, DateTimeInterface $dt, string $time): DateTimeImmutable
+    {
+        $str = $dt->format('Y-m-d ' . $time);
+        $newDt = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $str, $unidade->getDateTimeZone());
+
+        return $newDt->setTimezone(new DateTimeZone('UTC'));
     }
 }

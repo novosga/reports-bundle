@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Novosga\ReportsBundle\Service;
 
 use DateTimeInterface;
+use Doctrine\DBAL\Types\Types;
 use Novosga\Entity\UnidadeInterface;
 use Novosga\Entity\UsuarioInterface;
 use Novosga\ReportsBundle\NovosgaReportsBundle;
@@ -54,8 +55,8 @@ class ChartService
             ->andWhere('e.dataChegada <= :fim')
             ->andWhere('e.unidade = :unidade')
             ->andWhere('e.status = :status')
-            ->setParameter('inicio', $dataInicial->format('Y-m-d 00:00:00'))
-            ->setParameter('fim', $dataFinal->format('Y-m-d 23:59:59'))
+            ->setParameter('inicio', $dataInicial, Types::DATETIME_IMMUTABLE)
+            ->setParameter('fim', $dataFinal, Types::DATETIME_IMMUTABLE)
             ->setParameter('unidade', $unidade->getId());
 
         if ($usuario) {
@@ -97,8 +98,8 @@ class ChartService
             ->andWhere('a.unidade = :unidade')
             ->groupBy('s')
             ->setParameter('status', AtendimentoServiceInterface::ATENDIMENTO_ENCERRADO)
-            ->setParameter('inicio', $dataInicial->format('Y-m-d 00:00:00'))
-            ->setParameter('fim', $dataFinal->format('Y-m-d 23:59:59'))
+            ->setParameter('inicio', $dataInicial, Types::DATETIME_IMMUTABLE)
+            ->setParameter('fim', $dataFinal, Types::DATETIME_IMMUTABLE)
             ->setParameter('unidade', $unidade->getId());
 
         if ($usuario) {
@@ -147,8 +148,8 @@ class ChartService
             ->where('a.dataChegada >= :inicio')
             ->andWhere('a.dataChegada <= :fim')
             ->andWhere('a.unidade = :unidade')
-            ->setParameter('inicio', $dataInicial->format('Y-m-d 00:00:00'))
-            ->setParameter('fim', $dataFinal->format('Y-m-d 23:59:59'))
+            ->setParameter('inicio', $dataInicial, Types::DATETIME_IMMUTABLE)
+            ->setParameter('fim', $dataFinal, Types::DATETIME_IMMUTABLE)
             ->setParameter('unidade', $unidade->getId());
 
         if ($usuario) {
