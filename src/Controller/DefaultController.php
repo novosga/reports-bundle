@@ -72,7 +72,7 @@ class DefaultController extends AbstractController
         }
 
         $unidade = $this->getUnidade();
-        // convert local date time (unity tz) to UTC
+        // convert local date time (unit timezone) to UTC
         $startDate = $this->localDateToUTC($unidade, $data->startDate, '00:00:00');
         $endDate = $this->localDateToUTC($unidade, $data->endDate, '23:59:59');
 
@@ -127,7 +127,7 @@ class DefaultController extends AbstractController
         }
 
         $unidade = $this->getUnidade();
-        // convert local date time (unity tz) to UTC
+        // convert local date time (unit timezone) to UTC
         $startDate = $this->localDateToUTC($unidade, $data->startDate, '00:00:00');
         $endDate = $this->localDateToUTC($unidade, $data->endDate, '23:59:59');
 

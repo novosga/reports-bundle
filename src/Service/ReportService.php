@@ -170,7 +170,6 @@ class ReportService
             ->andWhere('e.status = :status')
             ->andWhere('e.dataChegada >= :dataInicial')
             ->andWhere('e.dataChegada <= :dataFinal')
-            ->orderBy('e.dataChegada', 'ASC')
             ->setParameter('status', AtendimentoServiceInterface::ATENDIMENTO_ENCERRADO)
             ->setParameter('dataInicial', $dataInicial, Types::DATETIME_IMMUTABLE)
             ->setParameter('dataFinal', $dataFinal, Types::DATETIME_IMMUTABLE)
