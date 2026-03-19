@@ -60,8 +60,6 @@ class DefaultController extends AbstractController
         AtendimentoServiceInterface $atendimentoService,
         ChartService $chartService,
     ): Response {
-        $envelope = new Envelope();
-
         $data = new GenerateChartDto();
         $form = $this
             ->createForm(ChartType::class, $data)
@@ -105,10 +103,10 @@ class DefaultController extends AbstractController
                 break;
         }
 
-        $data = $data->chart->jsonSerialize();
-        $envelope->setData($data);
-
-        return $this->json($envelope);
+        return $this->json(new Envelope(
+            timezone: $unidade->getDateTimeZone(),
+            data: $data->chart->jsonSerialize(),
+        ));
     }
 
     #[Route("/report", name: "report", methods: ['GET'])]
