@@ -27,7 +27,7 @@ use Novosga\ReportsBundle\Form\ReportType;
 use Novosga\ReportsBundle\Service\ChartService;
 use Novosga\ReportsBundle\Service\ReportService;
 use Novosga\Service\AtendimentoServiceInterface;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
