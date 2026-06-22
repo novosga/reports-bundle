@@ -32,9 +32,19 @@
                         
                         {{ form_row(chartForm.chart, { label: 'Gráfico' }) }}
 
-                        {{ form_row(chartForm.startDate, { label: 'Data inicial' }) }}
+                        {{ form_row(chartForm.startDate, {
+                            label: 'Data inicial',
+                            attr: {
+                                'onclick': 'this.showPicker()',
+                            },
+                        }) }}
 
-                        {{ form_row(chartForm.endDate, { label: 'Data final' }) }}
+                        {{ form_row(chartForm.endDate, {
+                            label: 'Data final',
+                            attr: {
+                                'onclick': 'this.showPicker()',
+                            },
+                        }) }}
 
                         {{ form_row(chartForm.usuario, { label: 'Usuário' }) }}
                         
@@ -55,11 +65,21 @@
                 {{ form_row(reportForm.report, { label: 'Relatório', attr: { 'onchange': 'App.Estatisticas.options(\'#tab-relatorios\')' } }) }}
 
                 <div class="option date date-range" style="display:none">
-                    {{ form_row(reportForm.startDate, { label: 'Data inicial' }) }}
+                    {{ form_row(reportForm.startDate, {
+                        label: 'Data inicial',
+                        attr: {
+                            'onclick': 'this.showPicker()',
+                        },
+                    }) }}
                 </div>
 
                 <div class="option date date-range" style="display:none">
-                    {{ form_row(reportForm.endDate, { label: 'Data final' }) }}
+                    {{ form_row(reportForm.endDate, {
+                        label: 'Data final',
+                        attrs: {
+                            'onclick': 'this.showPicker()',
+                        },
+                    }) }}
                 </div>
 
                 <div class="option user" style="display:none">

@@ -27,6 +27,7 @@ use Novosga\ReportsBundle\Form\ReportType;
 use Novosga\ReportsBundle\Service\ChartService;
 use Novosga\ReportsBundle\Service\ReportService;
 use Novosga\Service\AtendimentoServiceInterface;
+use Psr\Clock\ClockInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -57,6 +58,7 @@ class DefaultController extends AbstractController
     #[Route("chart", name: "chart", methods: ['POST'])]
     public function chart(
         Request $request,
+        ClockInterface $clock,
         AtendimentoServiceInterface $atendimentoService,
         ChartService $chartService,
     ): Response {
@@ -71,8 +73,9 @@ class DefaultController extends AbstractController
 
         $unidade = $this->getUnidade();
         // convert local date time (unit timezone) to UTC
-        $startDate = $this->localDateToUTC($unidade, $data->startDate, '00:00:00');
-        $endDate = $this->localDateToUTC($unidade, $data->endDate, '23:59:59');
+        $now = $clock->now();
+        $startDate = $this->localDateToUTC($unidade, $data->startDate ?? $now, '00:00:00');
+        $endDate = $this->localDateToUTC($unidade, $data->endDate ?? $now, '23:59:59');
 
         switch ($data->chart->id) {
             case 1:
@@ -112,6 +115,7 @@ class DefaultController extends AbstractController
     #[Route("/report", name: "report", methods: ['GET'])]
     public function report(
         Request $request,
+        ClockInterface $clock,
         ReportService $reportService,
         #[MapQueryParameter] int $page = 1,
     ): Response {
@@ -126,8 +130,10 @@ class DefaultController extends AbstractController
 
         $unidade = $this->getUnidade();
         // convert local date time (unit timezone) to UTC
-        $startDate = $this->localDateToUTC($unidade, $data->startDate, '00:00:00');
-        $endDate = $this->localDateToUTC($unidade, $data->endDate, '23:59:59');
+        $now = $clock->now();
+        $startDate = $this->localDateToUTC($unidade, $data->startDate ?? $now, '00:00:00');
+        $endDate = $this->localDateToUTC($unidade, $data->endDate ?? $now, '23:59:59');
+
 
         $data->report->dados = match ($data->report->id) {
             1 => $reportService->getServicosDisponiveisGlobal(),
